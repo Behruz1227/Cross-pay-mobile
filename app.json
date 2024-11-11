@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "QR - Pay",
+    "slug": "qr-pay",
+    "version": "1.0.3",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "svg": true,
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.abdulaziziz.qr-pay"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.behruz_0790.qrpay"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3c9fbcc6-0d75-4c9f-b491-913f03b3c9e0",
+        "apiBaseUrl": "https://apk.qrpay.uz/"
+      }
+    },
+    "owner": "behruz_0790"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "build": {
+    "production": {
+      "android": {
+        "buildType": "app-bundle",
+        "resourceClass": "medium"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "API_BASE_URL": "https://apk.qrpay.uz/"
+      }
+    },
+    "development": {
+      "developmentClient": true,
+      "env": {
+        "API_BASE_URL": "https://apk.qrpay.uz/"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "abdulazizsaidov5599@icloud.com",
+        "ascAppId": "6737022841",
+        "appleTeamId": "QGWH4H5H2J"
+      }
+    }
+  }
+}
