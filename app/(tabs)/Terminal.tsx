@@ -64,13 +64,11 @@ const Terminal: React.FC = () => {
     `${SellerEdit}${TerminalId ? TerminalId : 0}`,
     "PUT",
     {
-      // account: formData.hisob,
-      // filialCode: formData.filialKod,
-      // inn: formData.inn,
+      account: formData.hisob,
+      filialCode: formData.filialKod,
+      inn: formData.inn,
       name: formData.ism,
-      terminalSerialCode:
-        formData.terminalSeriyaKodu === "" ? null : formData.terminalSeriyaKodu,
-
+      terminalSerialCode: formData.terminalSeriyaKodu,
     }
   );
 
@@ -79,7 +77,7 @@ const Terminal: React.FC = () => {
       fetchTerminalList();
     }, [])
   );
-
+  
   useEffect(() => {
     if (editTerminal?.response) {
       Alert.alert("QR - Pay",langData?.MOBILE_TERMINAL_SUCCESSFULLY_EDITED || "Терминал успешно отредактирован!");
@@ -87,7 +85,7 @@ const Terminal: React.FC = () => {
       resetFormData();
       fetchTerminalList()
     } else if (editTerminal?.error) {
-      Alert.alert("QR - Pay",editTerminal?.error);
+      Alert.alert("QR - Pay", langData?.MOBILE_TERMINAL_ERROR_EDITED || "Произошла ошибка при редактировании терминала");
     }
   }, [editTerminal.response, editTerminal.error]);
 
@@ -99,8 +97,8 @@ const Terminal: React.FC = () => {
   };
 
   const validateForm = () => {
-    const { ism } = formData;
-    if (!ism ) {
+    const { ism, filialKod, hisob, inn, terminalSeriyaKodu } = formData;
+    if (!ism.trim() || !filialKod.trim() || !hisob.trim() || !inn.trim() || !terminalSeriyaKodu.trim()) {
       setErrorMessage(langData?.PLEASE_FILL_ALL_FIELDS || "Пожалуйста, заполните все обязательные поля.");
       return false;
     }
@@ -185,20 +183,20 @@ const Terminal: React.FC = () => {
                   <Text style={styles.boldText}>{langData?.MOBILE_NAME || "Имя"}:</Text>
                   <Text style={styles.cardDetail}>{terminal.name || "-"}</Text>
                 </View>
-                {/* <View style={styles.row}>
-                  <Text style={styles.boldText}>Счет:</Text>
+                <View style={styles.row}>
+                  <Text style={styles.boldText}>{langData?.MOBILE_ACCOUNT || "Счет"}:</Text>
                   <Text style={styles.cardDetail}>
                     {" "}
                     {terminal.account || "-"}
                   </Text>
-                </View> */}
-                {/* <View style={styles.row}>
-                  <Text style={styles.boldText}>Партнерский код:</Text>
+                </View> 
+                 <View style={styles.row}>
+                  <Text style={styles.boldText}>{langData?.MOBILE_MFO || "МФО"}:</Text>
                   <Text style={styles.cardDetail}>
                     {" "}
                     {terminal.filial_code || "-"}
                   </Text>
-                </View> */}
+                </View>
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_SERIAL_CODE || "Серийный код"}:</Text>
                   <Text style={styles.cardDetail}>
@@ -206,40 +204,41 @@ const Terminal: React.FC = () => {
                     {terminal?.terminalSerialCode || "-"}
                   </Text>
                 </View>
-                <View style={styles.row}>
+                {/* <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_MERCHANT || "Мерчант"}:</Text>
                   <Text style={styles.cardDetail}>
                     {" "}
                     {terminal?.merchant || "-"}
                   </Text>
-                </View>
+                </View> */}
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_STATUS || "Статус"}:</Text>
                   <Text style={styles.cardDetail}>
                     {" "}
-                    {terminal?.status || "-"}
-                  </Text>
+                    {terminal?.status ? `${langData?.MOBILE_STATUS_ACTIVE || "Активный"}` : `${langData?.MOBILE_STATUS_DISACTIVE || "Неактивный"}` || "-"}
+                  </Text> 
+                  {/* So'z qoldi */}
                 </View>
-                <View style={styles.row}>
+                {/* <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_TERMINAL_NUMBER || "Номер терминала"}:</Text>
                   <Text style={styles.cardDetail}>
                     {" "}
                     {terminal?.posId || "-"}
                   </Text>
-                </View>
+                </View> */}
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_TELEPHONE || "Телефон"}:</Text>
                   <Text style={styles.cardDetail}>
                     {" "}
-                    {terminal?.phone
-                      ? `+${terminal.phone.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')}`
+                    {terminal?.phones && terminal?.phones?.length > 0
+                      ? `${terminal.phones[0].replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')}`
                       : "-"}
                   </Text>
                 </View>
-                {/* <View style={styles.row}>
-                  <Text style={styles.boldText}>ИНН:</Text>
+                <View style={styles.row}>
+                  <Text style={styles.boldText}>{langData?.MOBILE_INN || "ИНН"}:</Text>
                   <Text style={styles.cardDetail}>{terminal.inn || "-"}</Text>
-                </View> */}
+                </View>
               </TouchableOpacity>
             ))
           ) : (
@@ -295,12 +294,12 @@ const Terminal: React.FC = () => {
               <Text style={{fontSize: 20, paddingVertical: 3}}>{langData?.MOBILE_EDIT_TERMINAL || "Редактировать терминал"}</Text>
               {[
                 { key: "ism", label: langData?.MOBILE_NAME || "Имя" },
-                // { key: "hisob", label: langData?.MOBILE_ACCOUNT || "Счет" },
-                // { key: "filialKod", label: langData?.MOBILE_FILIAL_CODE || "Код филиала" },
-                // { key: "inn", label: langData?.MOBILE_INN || "Инн" },
+                { key: "hisob", label: langData?.MOBILE_ACCOUNT || "Счет" },
+                { key: "filialKod", label: langData?.MOBILE_FILIAL_CODE || "Код филиала" },
+                { key: "inn", label: langData?.MOBILE_INN || "Инн" },
                 {
                   key: "terminalSeriyaKodu",
-                  label: langData?.MOBILE_SERIAL_CODE || "Серийный код терминала (опционально)",
+                  label: langData?.MOBILE_SERIAL_CODE || "Серийный код терминала",
                 }, // Optional
               ].map(({ key, label }) => (
                 <>

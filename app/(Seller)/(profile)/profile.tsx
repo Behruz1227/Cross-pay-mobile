@@ -28,7 +28,8 @@ import PhoneInput from "react-native-international-phone-number";
 
 // Define the shape of the profile data
 interface ProfileData {
-  managerFio: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   email: string;
   tin: string;
@@ -38,7 +39,8 @@ interface ProfileData {
 
 // Define the shape of errors
 interface ProfileErrors {
-  managerFio?: string;
+  firstName?: string;
+  lastName?: string;
   phone?: string;
   email?: string;
   tin?: string;
@@ -65,7 +67,8 @@ const Profile: React.FC = () => {
   const getMee = useGlobalRequest<ProfileData>(get_mee, "GET");
 
   const [formData, setFormData] = useState<ProfileData>({
-    managerFio: "",
+    firstName: "",
+    lastName: "",
     phone: "",
     email: "",
     tin: "",
@@ -73,13 +76,13 @@ const Profile: React.FC = () => {
     password: "12345",
   });
 
-
   const updateProfile = useGlobalRequest<any>(update_profile, "PUT", {
-    managerFio: formData.managerFio,
+    firstName: formData.firstName,
+    lastName: formData.lastName,
     phone: `998${formData.phone.replace(/[^0-9]/g, "")}`,
     email: formData.email,
-    tin: formData.tin,
-    bankBik: formData.bankBik,
+    inn: formData.tin,
+    filial_code: formData.bankBik,
     password: formData.password || null,
   }); // Adjust the type as per your API response
 
@@ -91,7 +94,8 @@ const Profile: React.FC = () => {
 
   const openModal = () => {
     setFormData({
-      managerFio: getMee?.response?.managerFio || "",
+      firstName: getMee?.response?.firstName || "",
+      lastName: getMee?.response?.lastName || "",
       phone: getMee?.response?.phone?.substring(3) || "",
       email: getMee?.response?.email || "",
       tin: getMee?.response?.tin || "",
@@ -119,6 +123,8 @@ const Profile: React.FC = () => {
   }, [updateProfile.response]);
 
   // Handle input changes
+  // console.log(formData.phone);
+  
   const handleInputChange = (name: keyof ProfileData, value: string) => {
     // if (name === "phone") {
     //     const formattedValue = formatPhoneNumber(value);
@@ -137,11 +143,13 @@ const Profile: React.FC = () => {
   // Validate the formn
   const validate = (): boolean => {
     const newErrors: ProfileErrors = {};
-    if (!formData.managerFio.trim())
-      newErrors.managerFio = langData?.NAME_REQUIRED || "Требуется имя";
+    if (!formData.firstName.trim())
+      newErrors.firstName = langData?.NAME_REQUIRED || "Требуется имя";
+    if (!formData.lastName.trim())
+      newErrors.lastName = langData?.SURNAME_REQUIRED || "Требуется фамилия";
     if (!formData.phone.trim()) {
       newErrors.phone = langData?.PHONE_REQUIRED || "Требуется номер телефона";
-    } else if (!/^\d{9}$/.test(formData.phone)) {
+    } else if (formData.phone.length !== 11) {
       newErrors.phone =
         langData?.PHONE_INVALID || "Номер телефона должен состоять из 9 цифр.";
     }
@@ -224,10 +232,18 @@ const Profile: React.FC = () => {
             {/* Profile Details */}
             <View style={styles.detailRow}>
               <Text style={styles.title}>
-                {langData?.MOBILE_NAME || "Ф.И.О"}:{" "}
+                {langData?.MOBILE_NAME || "Имя"}:
               </Text>
               <Text style={styles.desc}>
-                {getMee?.response?.managerFio || "--"}
+                {getMee?.response?.firstName || "--"}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.title}>
+                {langData?.MOBILE_SURNAME || "Фамилия"}:
+              </Text>
+              <Text style={styles.desc}>
+                {getMee?.response?.lastName || "--"}
               </Text>
             </View>
             <View style={styles.detailRow}>
@@ -251,7 +267,7 @@ const Profile: React.FC = () => {
                     {langData?.MOBILE_INN || "ИНН"}:{" "}
                   </Text>
                   <Text style={styles.desc}>
-                    {getMee?.response?.tin || "--"}
+                    {getMee?.response?.inn || "--"}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
@@ -259,7 +275,7 @@ const Profile: React.FC = () => {
                     {langData?.MOBILE_MFO || "МФО"}:{" "}
                   </Text>
                   <Text style={styles.desc}>
-                    {getMee?.response?.bankBik || "--"}
+                    {getMee?.response?.filial_code || "--"}
                   </Text>
                 </View>
               </>
@@ -293,16 +309,29 @@ const Profile: React.FC = () => {
                   {langData?.MOBILE_EDIT_PROFILE || "Редактировать профиль"}
                 </Text>
                 <Text style={{ fontSize: 15, paddingVertical: 3 }}>
-                  {langData?.MOBILE_NAME || "Ф.И.О"}
+                  {langData?.MOBILE_NAME || "Имя"}
                 </Text>
                 <TextInput
                   style={styles.input}
-                  placeholder={langData?.MOBILE_NAME || "Ф.И.О"}
-                  value={formData.managerFio}
-                  onChangeText={(text) => handleInputChange("managerFio", text)}
+                  placeholder={langData?.MOBILE_NAME || "Имя"}
+                  value={formData.firstName}
+                  onChangeText={(text) => handleInputChange("firstName", text)}
                 />
-                {errors.managerFio && (
-                  <Text style={styles.errorText}>{errors.managerFio}</Text>
+                {errors.firstName && (
+                  <Text style={styles.errorText}>{errors.firstName}</Text>
+                )}
+
+                <Text style={{ fontSize: 15, paddingVertical: 3 }}>
+                  {langData?.MOBILE_SURNAME || "Фамилия"}
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder={langData?.MOBILE_SURNAME || "Фамилия"}
+                  value={formData.lastName}
+                  onChangeText={(text) => handleInputChange("lastName", text)}
+                />
+                {errors.lastName && (
+                  <Text style={styles.errorText}>{errors.lastName}</Text>
                 )}
 
                 <Text style={{ fontSize: 15, paddingVertical: 3 }}>

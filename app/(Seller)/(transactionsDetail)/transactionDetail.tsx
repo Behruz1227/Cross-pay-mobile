@@ -36,12 +36,12 @@ const TransactionDetail = () => {
   const { paymentDetail } = OrderStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleConfirm, setIsModalVisibleConfirm] = useState(false);
-  const {langData} = langStore()
+  const { langData } = langStore();
   const navigation = useNavigation<TransactionDetailNavigationProp>();
 
   // Initialize useGlobalRequest without executing immediately
   const paymentCancel = useGlobalRequest(
-    `${cancel_payment}?ext_id=${paymentDetail?.transaction?.ext_id}`,
+    `${cancel_payment}${paymentDetail?.transaction?.id}`,
     "POST",
     {}
   );
@@ -52,39 +52,54 @@ const TransactionDetail = () => {
     {}
   );
 
-
-
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
   const openModalConfirm = () => setIsModalVisibleConfirm(true);
   const closeModalConfirm = () => setIsModalVisibleConfirm(false);
 
-
-
   useEffect(() => {
     if (paymentCancel?.response) {
-      Alert.alert("QR - Pay",langData?.SUCCESS || "Успех", langData?.MOBILE_PAYMENT_CANCELLED || "Платеж отменен.");
+      Alert.alert(
+        "QR - Pay",
+        langData?.MOBILE_PAYMENT_CANCELLED || "Платеж отменен."
+      );
       navigation.goBack();
-    } else if (paymentCancel?.error?.message) {
-      Alert.alert("QR - Pay",langData?.ERROR || "Ошибка", paymentCancel?.error?.message || langData?.MOBILE_PAYMENT_CANCELLED_ERROR || "Ошибка отмены платежа");
+    } else if (paymentCancel?.error) {
+      Alert.alert(
+        "QR - Pay",
+        // paymentCancel?.error?.message ||
+          langData?.MOBILE_PAYMENT_CANCELLED_ERROR ||
+          "Ошибка отмены платежа"
+      );
     }
   }, [paymentCancel.error, paymentCancel.response]);
 
   useEffect(() => {
     if (paymentConfirm?.response) {
-      Alert.alert("QR - Pay",langData?.SUCCESS || "Успех", langData?.MOBILE_PAYMENT_CONFIRMED || "Платеж подтвержден.");
+      Alert.alert(
+        "QR - Pay",
+        langData?.SUCCESS || "Успех",
+        langData?.MOBILE_PAYMENT_CONFIRMED || "Платеж подтвержден."
+      );
       navigation.goBack();
     } else if (paymentConfirm?.error?.message) {
-      Alert.alert("QR - Pay",langData?.ERROR || "Ошибка", paymentConfirm?.error?.message || langData?.MOBILE_PAYMENT_CONFIRMED_ERROR || "Ошибка подтверждения платежа");
+      Alert.alert(
+        "QR - Pay",
+        langData?.ERROR || "Ошибка",
+        paymentConfirm?.error?.message ||
+          langData?.MOBILE_PAYMENT_CONFIRMED_ERROR ||
+          "Ошибка подтверждения платежа"
+      );
     }
   }, [paymentConfirm.error, paymentConfirm.response]);
-
 
   // Ensure paymentDetail and transaction are defined
   if (!paymentDetail || !paymentDetail?.transaction) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.noDataText}>{langData?.MOBILE_PAYMENT_DETAILS_MISSING || ""}</Text>
+        <Text style={styles.noDataText}>
+          {langData?.MOBILE_PAYMENT_DETAILS_MISSING || ""}
+        </Text>
       </SafeAreaView>
     );
   }
@@ -100,79 +115,131 @@ const TransactionDetail = () => {
     closeModalConfirm();
   };
 
+
+  const bgGenerator = (status: string) => {
+    if (status === "WAIT")
+      return ["orange", langData?.MOBILE_STATUS_WAIT || "Ожидание"];
+    else if (status === "COMPLETED")
+      return ["green", langData?.MOBILE_STATUS_CONFIRMED || "  "];
+    else if (status === "CANCEL")
+      return ["red", langData?.MOBILE_STATUS_CANCELED || "Отменен"];
+    else if (status === "NEW")
+      return ["blue", langData?.MOBILE_STATUS_NEW || "Новый"];
+    else if (status === "RETURNED")
+      return ["purple", langData?.MOBILE_STATUS_RETURNED || "Возврат"];
+    else return ["gray", langData?.MOBILE_STATUS_UNKNOWN || "Неизвестно"]; // Default case
+  };
+
   return (
     <SafeAreaView style={styles.outerContainer}>
       <View style={styles.navigationContainer}>
-        <NavigationMenu name={langData?.MOBILE_PAYMENT_CHECK || "Проверка оплаты"} />
+        <NavigationMenu
+          name={langData?.MOBILE_PAYMENT_CHECK || "Проверка оплаты"}
+        />
       </View>
       <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
       <ScrollView style={styles.container}>
         <View style={styles.detailCard}>
-          <View style={{ width: "100%", gap: 10 }}>
-            <Text style={styles.title}>{langData?.MOBILE_COMPANY_NAME || "Название компании"}:</Text>
+          <View style={styles.detailRow}>
+            <Text style={styles.title}>
+              {langData?.MOBILE_PARTNER || "Партнер"}:
+            </Text>
             <Text style={styles.desc}>
-              {paymentDetail?.transaction?.sellerName || "-"}
+              {paymentDetail?.transaction?.partner || "-"}
             </Text>
           </View>
-          <View style={styles.detailRow}>
+          {/* <View style={styles.detailRow}>
             <Text style={styles.title}>{langData?.MOBILE_CURRENCY || "Валюта"}:</Text>
             <Text style={styles.desc}>
               {paymentDetail?.transaction?.currency || "-"}
             </Text>
-          </View>
+          </View> */}
           <View style={styles.detailRow}>
             <Text style={styles.title}>{langData?.MOBILE_RATE || "Курс"}:</Text>
             <Text style={styles.desc}>
-              {paymentDetail?.transaction?.rate || "-"}
+              {paymentDetail?.transaction?.rate || "-"} UZS
             </Text>
           </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.title}>{langData?.MOBILE_STATUS || "Статус"}:</Text>
+          <View style={{ width: "100%", gap: 10 }}>
+            <Text style={styles.title}>
+              {langData?.MOBILE_PURPOSE || "Цель"}:
+            </Text>
             <Text style={styles.desc}>
-              {paymentDetail?.transaction?.paymentStatus || "-"}
+              {paymentDetail?.transaction?.purpose || "-"}
             </Text>
           </View>
           <View style={styles.detailRow}>
+            <Text style={styles.title}>
+              {langData?.MOBILE_STATUS || "Статус"}:
+            </Text>
+            <Text
+              style={[
+                styles.desc,
+                { color: bgGenerator(paymentDetail?.transaction?.status)[0] },
+              ]}
+            >
+              {bgGenerator(paymentDetail?.transaction?.status)[1]}
+            </Text>
+          </View>
+          {/* <View style={styles.detailRow}>
             <Text style={styles.title}>{langData?.MOBILE_TERMINAL_NUMBER || "Номер терминала"}:</Text>
             <Text style={styles.desc}>
               {paymentDetail?.transaction?.posId
                 ? `${paymentDetail?.transaction?.posId}`
                 : "-"}
             </Text>
+          </View> */}
+          <View style={styles.detailRow}>
+            <Text style={styles.title}>
+              {langData?.MOBILE_CHECK_AMOUNT || "Сумма чека"}(UZS):
+            </Text>
+            <Text style={styles.desc}>
+              {(
+                paymentDetail?.transaction?.chequeAmount || 0
+              ).toLocaleString("uz-UZ", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}{" "}
+              {langData?.MOBILE_CHECK_AMOUN || "UZS"}
+            </Text>
           </View>
           <View style={styles.detailRow}>
-            <Text style={styles.title}>{langData?.MOBILE_CHECK_AMOUNT || "Сумма чека"}:</Text>
+            <Text style={styles.title}>
+              {langData?.MOBILE_CHECK_AMOUNT || "Сумма чека"}(RUB):
+            </Text>
             <Text style={styles.desc}>
-              {(paymentDetail?.transaction?.amount || 0).toLocaleString(
-                "uz-UZ",
-                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-              )}{" "}
-              {paymentDetail?.transaction?.currency || "UZS"}
+              {(
+                paymentDetail?.transaction?.qrAmount || 0
+              ).toLocaleString("uz-UZ", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}{" "}
+              {langData?.MOBILE_CHECK_AMOUN || "RUB"}
             </Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.title}>{langData?.MOBILE_DATE || "Дата"}:</Text>
             <Text style={styles.desc}>
-              {paymentDetail?.transaction?.dateCreate
-                ? paymentDetail?.transaction?.dateCreate.substring(0, 16)
+              {paymentDetail?.transaction?.cheque_created_at
+                ? paymentDetail?.transaction?.cheque_created_at.substring(0, 16)
                 : "-"}
             </Text>
           </View>
 
-          <View style={styles.detailRow}>
+          {/* <View style={styles.detailRow}>
             <Text style={styles.title}>{langData?.MOBILE_VALID_TIME || "Срок действия"}:</Text>
             <Text style={styles.desc}>
               {paymentDetail?.transaction?.validtil
                 ? paymentDetail?.transaction?.validtil.substring(0, 16)
                 : "-"}
             </Text>
-          </View>
+          </View> */}
 
           <View style={styles.qrContainer}>
             <View style={{ paddingVertical: 10 }}>
               <Text style={styles.qrTextTop}>
                 {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${(
-                  paymentDetail?.transaction?.amount || 0
+                  paymentDetail?.transaction?.chequeAmount || 0
                 ).toLocaleString("uz-UZ", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -184,7 +251,8 @@ const TransactionDetail = () => {
               <RenderQRCode url={paymentDetail?.transaction?.url} />
             </ErrorBoundary>
             <Text style={styles.qrText}>
-              {langData?.MOBILE_SCAN_QR || "Чтобы продолжить, отсканируйте этот QR-код."}
+              {langData?.MOBILE_SCAN_QR ||
+                "Чтобы продолжить, отсканируйте этот QR-код."}
             </Text>
           </View>
 
@@ -196,29 +264,35 @@ const TransactionDetail = () => {
             </View>
           </Pressable> */}
 
-          {/* <View
+          <View
             style={{
               width: Platform.OS === "ios" ? "110%" : "100%",
               display: "flex",
               flexDirection: "row",
-              justifyContent: "space-between",
+              justifyContent: "center",
               gap: 10,
             }}
           >
-            <Button
-              loading={paymentCancel.loading}
-              buttonStyle={{ backgroundColor: "red", paddingHorizontal: 16, borderRadius: 10 }}
-              title={langData?.MOBILE_PAYMENT_CANCEL || "Отмена платежа"}
-              onPress={openModal}
-              
-            />
-            <Button
+            {paymentDetail?.transaction?.status === "COMPLETED" && (
+              <Button
+                loading={paymentCancel.loading}
+                buttonStyle={{
+                  backgroundColor: "red",
+                  paddingHorizontal: 16,
+                  borderRadius: 10,
+                }}
+                title={langData?.MOBILE_PAYMENT_CANCEL || "Отмена платежа"}
+                onPress={openModal}
+              />
+            )}
+
+            {/* <Button
               loading={paymentConfirm.loading}
               buttonStyle={{ backgroundColor: "green", paddingHorizontal: 25, borderRadius: 10 }}
               title={langData?.MOBILE_PAYMENT_CONFIRM || "Подтвердить"}
               onPress={openModalConfirm}
-            />
-          </View> */}
+            /> */}
+          </View>
         </View>
 
         <CenteredModal
@@ -231,7 +305,8 @@ const TransactionDetail = () => {
         >
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>
-              {langData?.MOBILE_PAYMENT_CANCEL_CONFIRM || "Вы действительно собираетесь отменить этот платеж?"}
+              {langData?.MOBILE_PAYMENT_CANCEL_CONFIRM ||
+                "Вы действительно собираетесь отменить этот платеж?"}
             </Text>
           </View>
         </CenteredModal>
@@ -246,7 +321,8 @@ const TransactionDetail = () => {
         >
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>
-              {langData?.MOBILE_PAYMENT_CONFIRM_CONFIRM || "Вы действительно собираетесь подтвердить этот платеж?"}
+              {langData?.MOBILE_PAYMENT_CONFIRM_CONFIRM ||
+                "Вы действительно собираетесь подтвердить этот платеж?"}
             </Text>
           </View>
         </CenteredModal>

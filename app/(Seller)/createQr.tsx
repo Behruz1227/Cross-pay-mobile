@@ -31,7 +31,7 @@ const CreateQr = () => {
   const [amount, setAmount] = useState("");
   const [terminalId, setTerminalId] = useState(0);
   const { langData } = langStore();
-  const [phone, setPhone] = useState("");
+  // const [phone, setPhone] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [Messageamount, setMessageAmount] = useState("");
   const [alertShown, setAlertShown] = useState(false);
@@ -40,7 +40,7 @@ const CreateQr = () => {
 
   // Error states
   const [amountError, setAmountError] = useState("");
-  const [phoneError, setPhoneError] = useState("");
+  // const [phoneError, setPhoneError] = useState("");
   const [terminalIdError, setTerminalIdError] = useState("");
 
   const paymentCreate = useGlobalRequest(
@@ -48,9 +48,9 @@ const CreateQr = () => {
     "POST",
     {
       amount: amount,
-      phone: `7${phone.replace(/[^0-9]/g, "")}`,
+      // phone: `7${phone.replace(/[^0-9]/g, "")}`,
       terminalId: terminalId,
-      socketId: socketData?.id
+      // socketId: socketData?.id
     },
     "DEFAULT"
   );
@@ -93,17 +93,17 @@ const CreateQr = () => {
     } else {
       setAmountError("");
     }
-    if (!phone) {
-      if (phoneNumber === "77 308 8888" && phoneNumber.replace(/ /g, "").length !== 9) { 
-        setPhoneError("Enter a valid phone number");
-        valid = false;
-      } else if (phoneNumber.replace(/ /g, "").length === 10) {
-        setPhoneError("Enter a valid phone number");
-        valid = false;
-      }
-    } else {
-      setPhoneError("");
-    }
+    // if (!phone) {
+    //   if (phoneNumber === "77 308 8888" && phoneNumber.replace(/ /g, "").length !== 9) { 
+    //     setPhoneError("Enter a valid phone number");
+    //     valid = false;
+    //   } else if (phoneNumber.replace(/ /g, "").length === 10) {
+    //     setPhoneError("Enter a valid phone number");
+    //     valid = false;
+    //   }
+    // } else {
+    //   setPhoneError("");
+    // }
     if (terminalId === 0) {
       setTerminalIdError("Select a terminal");
       valid = false;
@@ -165,7 +165,7 @@ const CreateQr = () => {
             </View>
             {terminalIdError ? <Text style={styles.errorText}>{terminalIdError}</Text> : null}
 
-            <Text style={styles.label}>
+            {/* <Text style={styles.label}>
               {langData?.MOBILE_ENTER_PHONE_NUMBER || "Введите номер телефона"}
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -181,7 +181,7 @@ const CreateQr = () => {
                 }}
               />
             </View>
-            {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
+            {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null} */}
 
             <Text style={styles.label}>
               {langData?.MOBILE_ENTER_AMOUNT || "Введите сумму"}

@@ -19,9 +19,11 @@ import { sendCodeUrl } from "@/helpers/url";
 import { Colors } from "@/constants/Colors";
 import axios from "axios";
 import { CheckBox } from "react-native-elements";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import PhoneInput, { getCountryByCca2 } from "react-native-international-phone-number";
+import PhoneInput, {
+  getCountryByCca2,
+} from "react-native-international-phone-number";
 import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type SettingsScreenNavigationProp = NavigationProp<
   RootStackParamList,
@@ -33,25 +35,33 @@ const Login = () => {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
   const [backPressCount, setBackPressCount] = useState(0);
   const [policy, setPolicy] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
+
   const userData = {
     phone: `998${phoneNumber.replace(/ /g, "")}`,
   };
   // const loginUser = useGlobalRequest(`${sendCodeUrl}`, "POST", userData);
   const loginUser = async () => {
+    setLoading(true);
     if (phoneNumber) {
       await axios
         .post(`${sendCodeUrl}`, userData)
         .then((res) => {
-          if (res.data.data) navigation.navigate("(auth)/checkCode");
-          else if (res.data.error && res.data.error.message)
-            Alert.alert("QR - Pay",res.data.error.message);
+          if (res.data.data) {
+            navigation.navigate("(auth)/checkCode");
+            setLoading(false);
+          } else if (res.data.error && res.data.error.message)
+            Alert.alert("QR - Pay", res.data.error.message);
+          setLoading(false);
         })
         .catch((err) => {
-          Alert.alert("QR - Pay","произошла ошибка");
+          Alert.alert("QR - Pay", "произошла ошибка");
+          setLoading(false);
         });
     }
   };
+
+
 
   const [isPhoneNumberComplete, setIsPhoneNumberComplete] = useState(false); // New state to track phone number completeness
 
@@ -123,14 +133,14 @@ const Login = () => {
               />
             </View> */}
             <PhoneInput
-            placeholder="Введите номер телефона"
+              placeholder="Введите номер телефона"
               onChangeSelectedCountry={(country) => {
                 // Handle country change if needed
               }}
               onChangePhoneNumber={(text) => setPhoneNumber(text)}
               value={phoneNumber}
               selectedCountry={getCountryByCca2("UZ")}
-            />  
+            />
           </View>
           <View style={styles.containerPrifacy}>
             <CheckBox
@@ -140,25 +150,24 @@ const Login = () => {
               containerStyle={styles.checkboxContainer}
             />
             <View>
-                {/* <Text style={styles.text}>By logging in, you agree to our</Text> */}
-                <Text style={styles.text}>Авторизуясь, вы соглашаетесь с </Text>
+              {/* <Text style={styles.text}>By logging in, you agree to our</Text> */}
+              <Text style={styles.text}>Авторизуясь, вы соглашаетесь с </Text>
               <TouchableOpacity
-              style={{ display: "flex", alignItems: "center"}}
-                onPress={() => navigation.navigate("(Seller)/(shartlar)/PrivacyTermsPage")}
+                style={{ display: "flex", alignItems: "center" }}
+                onPress={() =>
+                  navigation.navigate("(Seller)/(shartlar)/PrivacyTermsPage")
+                }
               >
                 {/* <Text style={styles.link}>
                  Terms of use and Privacy Policy.
                 </Text> */}
                 <Text style={styles.link}>
-                 Условиями использования и Политикой конфиденциальности.
+                  Условиями использования и Политикой конфиденциальности.
                 </Text>
               </TouchableOpacity>
-              <Text>
-                
-              </Text>
+              <Text></Text>
             </View>
           </View>
-
         </View>
         {isPhoneNumberComplete && (
           <View
@@ -171,10 +180,10 @@ const Login = () => {
             }}
           >
             <Buttons
-            isDisebled={policy}
-              title={"Войти"}
+              isDisebled={policy}
+              title={loading ? "Загрузка..." : "Войти"}
               onPress={() => loginuser()}
-              //   loading={sendCode.loading || userFound.loading}
+              // loading={sendCode.loading || userFound.loading}
             />
           </View>
         )}
@@ -261,26 +270,26 @@ const styles = StyleSheet.create({
   },
   checkboxContainer: {
     marginTop: -15,
-  //   padding: 0,
-  //   margin: 0,
+    //   padding: 0,
+    //   margin: 0,
   },
   text: {
-    fontWeight: '400',
+    fontWeight: "400",
     fontSize: 14,
-    color: '#000', // textColorDetails
+    color: "#000", // textColorDetails
     // display: "flex",
     // flexDirection: "column",
   },
   link: {
-    color: '#007AFF', // textColorBrand
-    fontWeight: '500',
+    color: "#007AFF", // textColorBrand
+    fontWeight: "500",
   },
 
   containerPrifacy: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "flex-start",
-    maxWidth: '100%',
+    maxWidth: "100%",
     marginVertical: 20,
   },
 });

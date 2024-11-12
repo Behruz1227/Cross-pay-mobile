@@ -17,35 +17,38 @@ export function useGlobalRequest<T>(
 ): UseGlobalResponse<T> {
     const mutation = useMutation({
         mutationFn: async () => {
-            const config = configType === 'DEFAULT' ? await getConfig() : await getConfigImg();
-            let res;
+            try {
+                const config = configType === 'DEFAULT' ? await getConfig() : await getConfigImg();
+                let res;
 
-            switch (method) {
-                case 'GET':
-                    res = await axios.get(url, config || {});
-                    break;
-                case 'POST':
-                    res = await axios.post(url, data || {}, config || {});
-                    
-                    break;
-                case 'PUT':
-                    res = await axios.put(url, data || {}, config || {});
-                    break;
-                case 'DELETE':
-                    res = await axios.delete(url, config || {});
-                    break;
-                default:
-                    throw new Error('Invalid method');
+                switch (method) {
+                    case 'GET':
+                        res = await axios.get(url, config || {});
+                        break;
+                    case 'POST':
+                        res = await axios.post(url, data || {}, config || {});
+                        break;
+                    case 'PUT':
+                        res = await axios.put(url, data || {}, config || {});
+                        break;
+                    case 'DELETE':
+                        res = await axios.delete(url, config || {});
+                        break;
+                    default:
+                        throw new Error('Invalid method');
+                }
+
+                // Check for errors in the response
+                if (res.data.error) {
+                    throw new Error(res.data.error.message);
+                }
+
+                // Return response data if exists
+                return res.data.data;
+            } catch (error) {
+                console.error("Request failed:", error);
+                throw error; // Pass error to React Query's error handling
             }
-
-            // Check for errors in the response
-            if (res.data.error) {
-                // console.log(res.data.error);
-                throw new Error(res.data.error.message);
-            }
-
-            // Return response data if exists
-            return res.data.data;
         },
     });
 

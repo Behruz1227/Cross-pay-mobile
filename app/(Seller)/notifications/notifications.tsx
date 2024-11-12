@@ -51,6 +51,9 @@ const Notifications = () => {
     selectedIds.length > 0 ? { ids: selectedIds } : { ids: [] }
   );
 
+  // console.log(response);
+  
+
   useFocusEffect(
     useCallback(() => {
       const fetchRole = async () => {
@@ -187,6 +190,9 @@ const Notifications = () => {
               sellerName: string;
               merchant: string;
               amount: number;
+              partner: string;
+              priceUz: string
+              priceRu: string
             }) => (
               <View
                 key={item.id}
@@ -207,7 +213,7 @@ const Notifications = () => {
                       { width: "80%" },
                     ]}
                   >
-                    {item?.sellerName}
+                    {item?.title || "-"}
                   </Text>
                   {item.isRead ? (
                     <MaterialIcons name="done-all" size={24} color="#ccc" />
@@ -229,7 +235,7 @@ const Notifications = () => {
                         { fontWeight: "bold" },
                       ]}
                     >
-                      {langData?.MOBILE_MERCHANT || "Торговец"}:
+                      {langData?.MOBILE_PARTNER || "Партнер"}:
                     </Text>
                     <Text
                       style={[
@@ -237,7 +243,7 @@ const Notifications = () => {
                         // { width: "80%" },
                       ]}
                     >
-                      {item?.merchant || "-"}
+                      {item?.partner || "-"}
                     </Text>
                   </View>
                   <View
@@ -249,7 +255,7 @@ const Notifications = () => {
                         { fontWeight: "bold" },
                       ]}
                     >
-                      {langData?.MOBILE_AMOUNT || "Количество"}:
+                      {langData?.MOBILE_AMOUNT || "Количество"}(UZS):
                     </Text>
                     <Text
                       style={[
@@ -257,7 +263,27 @@ const Notifications = () => {
                         // { width: "80%" },
                       ]}
                     >
-                      {item?.amount || "-"} UZS
+                      {(item?.priceUz || 0).toLocaleString('uz-UZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} UZS
+                    </Text>
+                  </View>
+                  <View
+                    style={{ width: "100%", flexDirection: "row", gap: 10 }}
+                  >
+                    <Text
+                      style={[
+                        item.isRead ? styles.greycolor : styles.Darkcolor,
+                        { fontWeight: "bold" },
+                      ]}
+                    >
+                      {langData?.MOBILE_AMOUNT || "Количество"}(RUB):
+                    </Text>
+                    <Text
+                      style={[
+                        item.isRead ? styles.greycolor : styles.Darkcolor,
+                        // { width: "80%" },
+                      ]}
+                    >
+                      {(item?.priceRu || 0).toLocaleString('uz-UZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} RUB
                     </Text>
                   </View>
                 </View>

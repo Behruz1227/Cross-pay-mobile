@@ -49,6 +49,7 @@ const TransactionCard = ({ transaction }: TransactionCardProps) => {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
   
   const {setPaymentDetail} = OrderStore()
+  
 
   return (
     <TouchableOpacity activeOpacity={.7} onPress={() => {
@@ -58,11 +59,11 @@ const TransactionCard = ({ transaction }: TransactionCardProps) => {
       <View style={styles.card}>
         <View style={styles.textContainer}>
           <View>
-            <Text style={styles.title}>{transaction?.sellerName || "-"}</Text>
+            <Text style={styles.title}>{transaction?.partner || "-"}</Text>
             <Text style={styles.date}>{transaction?.cheque_created_at}</Text>
           </View>
-          <Text style={{ color: transaction?.amount <= 0 ? "red" : "green" }}>
-            {(transaction?.amount || 0).toLocaleString('uz-UZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {transaction?.currency || "UZS"}
+          <Text style={{ color: transaction?.chequeAmount <= 0 ? "red" : "green" }}>
+            {(transaction?.chequeAmount || 0).toLocaleString('uz-UZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {transaction?.currency || "UZS"}
           </Text>
         </View>
       </View>
@@ -95,6 +96,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
+    textAlign: "center",
     fontWeight: "bold",
   },
   date: {

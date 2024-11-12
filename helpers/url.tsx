@@ -1,22 +1,22 @@
-const apiLink = 'https://apk.qrpay.uz/'
+const apiLink = 'http://185.74.4.138:8080/'
 
 
 export const staisticUrl = `${apiLink}statistics/seller`
-export const loginUrl = `${apiLink}user/login` //
-export const sendCodeUrl = `${apiLink}user/send-code` //
-export const createPayment = `${apiLink}order/create`  //
-export const cancel_payment = `${apiLink}order/cancel?orderId=`  //
-export const confirm_payment = `${apiLink}order/confirm?orderId=`  //
+export const loginUrl = `${apiLink}api/user/login` //
+export const sendCodeUrl = `${apiLink}api/user/send-code` //
+export const createPayment = `${apiLink}payment/create`  //
+export const cancel_payment = `${apiLink}payment/cancel?orderId=`  //
+export const confirm_payment = `${apiLink}payment/confirm?orderId=`  //
 // export const cancel_payment_real_terminal = `${apiLink}order/create/real-terminal`  //
 
 export const SellerGet = `${apiLink}terminal/list`
 
 export const SellerEdit = `${apiLink}terminal/update/`
 export const post_terminal = `${apiLink}terminal/add-terminal-user`
-export const payment_get_seller = `${apiLink}order/list/for/seller` //
-export const payment_get_terminal = `${apiLink}order/list/for/terminal` //
+export const payment_get_seller = `${apiLink}payment/list/for/seller` //
+export const payment_get_terminal = `${apiLink}payment/list/for/terminal` //
 
-export const UserTerminalGet = `${apiLink}user/terminal` //
+export const UserTerminalGet = `${apiLink}api/user/terminal` //
 export const UserTerminalListGet = `${apiLink}terminal/select-terminal-list`
 export const UserTerminaldelete = `${apiLink}terminal/delete-terminal-user`
 
@@ -28,8 +28,8 @@ export const seller_notification_count = `${apiLink}notification/count/for-selle
 export const terminal_notification_count = `${apiLink}notification/count/for-terminal`
 
 
-export const get_mee = `${apiLink}user/me`
-export const update_profile = `${apiLink}user/update`
+export const get_mee = `${apiLink}api/user/me`
+export const update_profile = `${apiLink}api/user/update`
 
 // WORDS CONTROLLER
 export const words_get = `${apiLink}words?status=`

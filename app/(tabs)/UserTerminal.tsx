@@ -34,8 +34,8 @@ interface UserTerminal {
   name: string;
   address: string;
   phone: string;
-  // lastName: string;
-  managerFio: string;
+  lastName: string;
+  firstName: string;
   email: string;
   terminalName: string | null;
   inn: string | null;
@@ -59,7 +59,8 @@ export default function UserTerminal() {
   const [TerminalId, setTerminalId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     terminalId: "",
-    managerFio: "",
+    firstName: "",
+    lastName: "",
     phone: "",
     password: "12345",
   });
@@ -81,7 +82,8 @@ export default function UserTerminal() {
 
   const editTerminal = useGlobalRequest(`${post_terminal}`, "POST", {
     terminalId: formData.terminalId,
-    managerFio: formData.managerFio,
+    firstName: formData.firstName,
+    lastName: formData.lastName,
     phone: `998${formData.phone.replace(/[^0-9]/g, "")}`,
     password: formData.password,
   });
@@ -99,15 +101,16 @@ export default function UserTerminal() {
       terminalList.globalDataFunc();
     }, [])
   );
+  // console.log(response);
 
   
     useEffect(() => {
       if (editTerminal?.response) {
-        Alert.alert("QR - Pay",langData?.MOBILE_USER_TERMINAL_ADDED_SUCCESSFULLY || "Пользователь терминала добавлен успешно!");
+        Alert.alert("QR - Pay", langData?.MOBILE_USER_TERMINAL_ADDED_SUCCESSFULLY || "Пользователь терминала добавлен успешно!");
         globalDataFunc();
         terminalList.globalDataFunc();
       } else if (editTerminal?.error) {
-        Alert.alert("QR - Pay",langData?.MOBILE_ERROR_ADDING_USER_TERMINAL || "Ошибка добавления пользователя терминала.");
+        Alert.alert("QR - Pay", langData?.MOBILE_ERROR_ADDING_USER_TERMINAL || "Ошибка добавления пользователя терминала.");
       }
     }, [editTerminal?.response, editTerminal?.error])
 
@@ -122,8 +125,8 @@ export default function UserTerminal() {
     }, [terminalDelete?.response, terminalDelete?.error])
 
   const validateForm = () => {
-    const { terminalId, managerFio, phone, password } = formData;
-    if (!terminalId || !managerFio || !phone || !password) {
+    const { terminalId, firstName, phone, password } = formData;
+    if (!terminalId || !firstName || !phone || !password) {
       setErrorMessage(langData?.PLEASE_FILL_ALL_FIELDS || "Пожалуйста, заполните все обязательные поля.");
       return false;
     }
@@ -134,7 +137,8 @@ export default function UserTerminal() {
   const resetFormData = () => {
     setFormData({
       terminalId: "",
-      managerFio: "",
+      firstName: "",
+      lastName: "",
       phone: "",
       password: "12345",
     });
@@ -224,14 +228,18 @@ export default function UserTerminal() {
                   <Text style={styles.cardDetail}>{item?.terminalName || "-"}</Text>
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.boldText}>{langData?.MOBILE_FULL_NAME || "Ф.И.О"}:</Text>
-                  <Text style={styles.cardDetail}>{item?.managerFio || "-"}</Text>
+                  <Text style={styles.boldText}>{langData?.MOBILE_NAME || "Имя"}:</Text>
+                  <Text style={styles.cardDetail}>{item?.firstName || "-"}</Text>
+                </View> 
+                <View style={styles.row}>
+                  <Text style={styles.boldText}>{langData?.MOBILE_SURNAME || "Фамилия"}:</Text>
+                  <Text style={styles.cardDetail}>{item?.lastName || "-"}</Text>
                 </View> 
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_TELEPHONE || "Телефон"}:</Text>
                   <Text style={styles.cardDetail}>
                     {item?.phone
-                      ? `+${item.phone.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')}`
+                      ? `${item.phone.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')}`
                       : "-"}
                   </Text>
                 </View>
@@ -337,12 +345,19 @@ export default function UserTerminal() {
             </View>
 
             {/* First Name */}
-            <Text style={styles.label}>{langData?.MOBILE_FULL_NAME || "Ф.И.О"}</Text>
+            <Text style={styles.label}>{langData?.MOBILE_NAME || "Имя"}</Text>
             <TextInput
-              placeholder={langData?.MOBILE_FULL_NAME || "Ф.И.О"} 
+              placeholder={langData?.MOBILE_NAME || "Имя"} 
               style={styles.input}
-              value={formData.managerFio}
-              onChangeText={(text) => handleInputChange("managerFio", text)}
+              value={formData.firstName}
+              onChangeText={(text) => handleInputChange("firstName", text)}
+            />
+            <Text style={styles.label}>{langData?.MOBILE_SURNAME || "Фамилия"}</Text>
+            <TextInput
+              placeholder={langData?.MOBILE_SURNAME || "Фамилия"} 
+              style={styles.input}
+              value={formData.lastName}
+              onChangeText={(text) => handleInputChange("lastName", text)}
             />
 
             <Text style={styles.label}>{langData?.MOBILE_TELEPHONE || "Телефон"}</Text>
