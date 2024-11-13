@@ -1,60 +1,58 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Welcome from "./(welcome)/welcome";
-import { useNavigation } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 import { RootStackParamList } from "@/types/root/root";
 import { NavigationProp } from "@react-navigation/native";
-// import { SocketStore } from "@/helpers/stores/socket/socketStore";
-// import CenteredModal from "@/components/modal/modal-centered";
-import { Dimensions, ScrollView, StyleSheet, Text } from "react-native";
-// import { View } from "react-native";
-// import Buttons from "@/components/buttons/button";
-// import Modal from "react-native-modal";
-// import { langStore } from "@/helpers/stores/language/languageStore";
+import { Dimensions, StyleSheet } from "react-native";
 
-type SettingsScreenNavigationProp = NavigationProp<
-  RootStackParamList,
-  "(tabs)"
->;
+type SettingsScreenNavigationProp = NavigationProp<RootStackParamList, "(tabs)">;
 
 const { width, height } = Dimensions.get("window");
 
 const Index = () => {
-  const [role, setRole] = useState<string | null>("");
-  const [token, setToken] = useState<string | null>("");
+  const [role, setRole] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [deadlineCheck, setDeadlineCheck] = useState<boolean>(false);
   const navigation = useNavigation<SettingsScreenNavigationProp>();
-  
+
+  useFocusEffect(
+    useCallback(() => {
+      const getToken = async () => {
+        const role = await AsyncStorage.getItem("role");
+        const token = await AsyncStorage.getItem("token");
+        const deadline = await AsyncStorage.getItem("deadline");
+
+        const today = new Date();
+        const formattedToday = today.toISOString().split("T")[0];
+
+        if (deadline) {
+          if (new Date(formattedToday) < new Date(deadline)) {
+            setDeadlineCheck(true);
+          } else {
+            setDeadlineCheck(false);
+            await AsyncStorage.multiRemove(["role", "token", "deadline"]);
+          }
+        } else {
+          await AsyncStorage.setItem("deadline", "");
+          setDeadlineCheck(false);
+        }
+
+        setRole(role);
+        setToken(token);
+      };
+
+      getToken();
+    }, [])
+  );
 
   useEffect(() => {
-    const getToken = async () => {
-      // await AsyncStorage.removeItem('role');
-      // await AsyncStorage.removeItem('token');
-      const role = await AsyncStorage.getItem("role");
-      const token = await AsyncStorage.getItem("token");
-      const deadline = await AsyncStorage.getItem("deadline");
-      const deadline3 = new Date();
-        deadline3.setDate(deadline3.getDate() + 5);
-        const formattedDeadline = deadline3.toISOString().split('T')[0];
-      setRole(role);
-      setToken(token);
-    };
+    if (token && role && deadlineCheck) {
+      navigation.navigate("(tabs)");
+    }
+  }, [token, role, deadlineCheck, navigation]);
 
-    getToken();
-  }, []);
-
-  
-
-  if (token && role) {
-    navigation.navigate("(tabs)");
-  } else {
-    return (
-      <>
-        <Welcome />
-
-        
-      </>
-    );
-  }
+  return token && role && deadlineCheck ? null : <Welcome />;
 };
 
 const styles = StyleSheet.create({
