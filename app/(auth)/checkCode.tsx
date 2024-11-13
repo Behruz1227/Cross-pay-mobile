@@ -112,6 +112,12 @@ const CheckCode = () => {
     useCallback(() => {
       if (response && response?.token) {
         AsyncStorage.setItem("token", response?.token ? response?.token : null);
+        const deadline = new Date();
+        deadline.setDate(deadline.getDate() + 5);
+        const formattedDeadline = deadline.toISOString().split('T')[0];
+        AsyncStorage.setItem("deadline", formattedDeadline);
+        console.log(formattedDeadline);
+        
         AsyncStorage.setItem("role", response?.role ? response?.role : null);
         if (response?.role === "ROLE_SUPER_ADMIN") {
           Alert.alert("QR - Pay","Вы не можете войти в приложение");

@@ -1,4 +1,4 @@
-const apiLink = 'http://185.74.4.138:8080/'
+const apiLink = 'https://apk.qrpay.uz/' 
 
 
 export const staisticUrl = `${apiLink}statistics/seller`

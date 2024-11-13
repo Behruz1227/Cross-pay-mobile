@@ -119,6 +119,10 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (updateProfile.response) {
       AsyncStorage.setItem("token", updateProfile.response);
+      const deadline = new Date();
+        deadline.setDate(deadline.getDate() + 5);
+        const formattedDeadline = deadline.toISOString().split('T')[0];
+        AsyncStorage.setItem("deadline", formattedDeadline);
     }
   }, [updateProfile.response]);
 
