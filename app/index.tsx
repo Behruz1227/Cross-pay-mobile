@@ -31,6 +31,10 @@ const Index = () => {
       // await AsyncStorage.removeItem('token');
       const role = await AsyncStorage.getItem("role");
       const token = await AsyncStorage.getItem("token");
+      const deadline = await AsyncStorage.getItem("deadline");
+      const deadline3 = new Date();
+        deadline3.setDate(deadline3.getDate() + 5);
+        const formattedDeadline = deadline3.toISOString().split('T')[0];
       setRole(role);
       setToken(token);
     };

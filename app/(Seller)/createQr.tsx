@@ -35,7 +35,7 @@ const CreateQr = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [Messageamount, setMessageAmount] = useState("");
   const [alertShown, setAlertShown] = useState(false);
-  const [qrValue, setQrValue] = useState<any>(null);
+  const [qrValue, setQrValue] = useState<any>("https://qrpay.uz/");
   const { setSocketData, setSocketModalData, socketData, } = SocketStore()
 
   // Error states
@@ -204,7 +204,7 @@ const CreateQr = () => {
               <View style={styles.qrContainer}>
                 <View style={{ paddingVertical: 10 }}>
                   <Text style={styles.qrTextTop}>
-                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${Messageamount || "0"} ${"UZS"}`}
+                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${amount || "0"} ${"UZS"}`}
                   </Text>
                 </View>
                 <ErrorBoundary>
