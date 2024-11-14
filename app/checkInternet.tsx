@@ -10,6 +10,7 @@ import CenteredModal from "@/components/modal/modal-centered";
 import { Colors } from "@/constants/Colors";
 import { Image } from "react-native-elements";
 import { langStore } from "@/helpers/stores/language/languageStore";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const InternetCheckModal = () => {
   const [isConnected, setIsConnected] = useState(true);
@@ -55,7 +56,7 @@ const InternetCheckModal = () => {
       <CenteredModal
         btnRedText={
           isLoading ? (
-            <ActivityIndicator size="small" color={Colors.light.primary} />
+            <ActivityIndicator size="large" color={"white"} />
           ) : (
             langData?.MOBILE_RETRY || "Повторить проверку"
           )
@@ -69,7 +70,7 @@ const InternetCheckModal = () => {
         }}
         toggleModal={() => {}}
       >
-        <View style={{}}>
+        <View style={{width: "100%"}}>
           <View
             style={{
               flexDirection: "row",
@@ -78,10 +79,11 @@ const InternetCheckModal = () => {
               marginVertical: 10,
             }}
           >
-            <Image
-              source={require("@/assets/images/no-wifi.svg")}
-              style={{ width: 100, height: 100 }}
-            />
+            <MaterialIcons
+                  name="wifi-off"
+                  size={85}
+                  color={Colors.light.primary}
+                />
           </View>
           <Text style={styles.modalText}>
             {langData?.MOBILE_INTERNET_PROBLEMS || "У вас проблемы с интернетом"}
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 15,
     textAlign: "center",
   },
 });

@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     borderRadius: 20,
     alignItems: "center",
+    width: "100%"
   },
   buttonContainer: {
     width: "100%",

@@ -30,7 +30,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-        gap: 10
+        gap: 10,
+        width: '100%',
     },
     buttonText: {
         fontWeight: '500',
