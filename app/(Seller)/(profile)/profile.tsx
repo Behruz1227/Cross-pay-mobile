@@ -98,10 +98,12 @@ const Profile: React.FC = () => {
       lastName: getMee?.response?.lastName || "",
       phone: getMee?.response?.phone?.substring(3) || "",
       email: getMee?.response?.email || "",
-      tin: getMee?.response?.tin || "",
-      bankBik: getMee?.response?.bankBik || "",
+      tin: getMee?.response?.inn || "",
+      bankBik: getMee?.response?.filial_code || "",
       password: "12345",
     });
+    console.log(getMee);
+    
     setDefaultPhone(getMee?.response?.phone || "");
     setErrors({});
     setModal(true);
