@@ -23,8 +23,8 @@ import Profile from "./(Seller)/(profile)/profile";
 import CheckCode from "./(auth)/checkCode";
 import PrivacyTermsPage from "./(Seller)/(shartlar)/PrivacyTermsPage";
 import InternetCheckModal from "./checkInternet";
-// import { SocketStore } from "@/helpers/stores/socket/socketStore";
-// import CallBackModal from "./callBackModal";
+import { SocketStore } from "@/helpers/stores/socket/socketStore";
+import CallBackModal from "./callBackModal";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,37 +34,37 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
-  // const {
-  //   setSocketModal,
-  //   setSocketModalData,
-  //   setTimer,
-  //   socketModal,
-  //   socketModalData,
-  //   timer,
-  // } = SocketStore();
+  const {
+    setSocketModal,
+    setSocketModalData,
+    setTimer,
+    socketModal,
+    socketModalData,
+    timer,
+  } = SocketStore();
 
-  // useEffect(() => {
-  //   if (socketModalData) {
-  //     setSocketModal(true);
-  //     setTimer(60); // 60 senlik sanashni o'qishni bosqichga olish
-  //   }
-  // }, [socketModalData]);
+  useEffect(() => {
+    if (socketModalData) {
+      setSocketModal(true);
+      setTimer(10); // 10 senlik sanashni o'qishni bosqichga olish
+    }
+  }, [socketModalData]);
 
-  // useEffect(() => {
-  //   let interval: NodeJS.Timeout;
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
 
-  //   if (socketModal && timer > 0) {
-  //     interval = setInterval(() => {
-  //       setTimer(timer - 1);
-  //     }, 900);
-  //   } else if (timer === 0) {
-  //     setSocketModal(false);
-  //     setTimer(0);
-  //     setSocketModalData(null);
-  //   }
+    if (socketModal && timer > 0) {
+      interval = setInterval(() => {
+        setTimer(timer - 1);
+      }, 900);
+    } else if (timer === 0) {
+      setSocketModal(false);
+      setTimer(0);
+      setSocketModalData(null);
+    }
 
-  //   return () => clearInterval(interval);
-  // }, [socketModal, timer]);
+    return () => clearInterval(interval);
+  }, [socketModal, timer]);
 
   useEffect(() => {
     if (loaded) {
@@ -81,7 +81,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={queryClient}>
-        {/* <CallBackModal/> */}
+        <CallBackModal/>
 
         <InternetCheckModal />
         <Stack.Navigator

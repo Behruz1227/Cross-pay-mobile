@@ -19,7 +19,7 @@ import { Colors } from "@/constants/Colors";
 import { FlatList } from "react-native";
 import TransactionActionHeadCard from "@/components/cards/tranzaktionActionCardsHead";
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   payment_get_seller,
   payment_get_terminal,
@@ -30,6 +30,8 @@ import { useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { langStore } from "@/helpers/stores/language/languageStore";
+import { io, Socket } from "socket.io-client";
+import { SocketStore } from "@/helpers/stores/socket/socketStore";
 
 export default function HomeScreen() {
   const [url, setUrl] = useState("");
@@ -37,6 +39,8 @@ export default function HomeScreen() {
   const [page, setPage] = useState(0);
   const [backPressCount, setBackPressCount] = useState(0);
   const { langData, setLangData } = langStore();
+  const socketRef = useRef<Socket | null>(null);
+  const { setSocketData, socketData, setSocketModalData, setNotificationSocket} = SocketStore();
   const { response, globalDataFunc, loading } = useGlobalRequest(
     staisticUrl,
     "GET",
@@ -48,6 +52,74 @@ export default function HomeScreen() {
     "DEFAULT"
   );
   const getLangData = useGlobalRequest(`${words_get_data}MOBILE`, "GET");
+
+  const connectSocket = () => {
+    if (role !== "ROLE_SUPER_ADMIN") {
+      
+      if (socketRef.current) {
+        socketRef?.current?.disconnect(); // Eskisini uzib tashlaymiz
+      }
+      socketRef.current = io('https://my.qrpay.uz', {
+        transports: ['websocket'], // Faqat WebSocket transportini ishlatish
+    secure: true
+      });
+      
+
+      socketRef?.current.on('connect', () => {
+        console.log('Connected to Socket.IO server ID: ' + socketRef?.current?.id);
+        setSocketData(socketRef.current);
+      });
+
+      socketRef.current.on('notification', (data) => {
+        console.log('Notification data:', data);
+        setNotificationSocket(data);
+      });
+
+      socketRef.current.on('callback-web-or-app', (data) => {
+        console.log('calback data:', data);
+        setSocketModalData(data);
+      });
+
+       socketRef.current.on('test', (data) => {
+        console.log('Received data:', data);
+        setSocketModalData(data);
+      });
+
+      socketRef.current.on('connect_error', (error) => {
+        console.error('Socket connection error:', error);
+        setTimeout(() => {
+          console.log('Retrying to connect socket...');
+          connectSocket(); // Qayta ulanish
+        }, 5000);
+      });
+    }
+
+  };
+
+  useEffect(() => {
+    // if (role === "ROLE_SUPER_ADMIN") {
+      connectSocket(); // Ilk bor socketni ulaymiz
+    // }
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect(); // Unmount qilinganda socketni uzamiz
+      }
+    };
+
+  }, []);
+
+  useEffect(() => {
+    if (role !== "ROLE_SUPER_ADMIN") {
+      if (socketRef.current && !socketRef.current.connected) {
+        connectSocket(); // Agar socket ulanmagan bo'lsa, qayta ulash
+      }
+    }
+  }, [socketRef]); // Sahifa va o'lcham o'zgarsa qayta ulanish
+
+  console.log("socketData", socketData);
+  console.log("socketData id", socketData?.id);
+  console.log("socketData connected", socketData?.connected);
+  console.log("socket2", socketData);
 
   useFocusEffect(
     useCallback(() => {

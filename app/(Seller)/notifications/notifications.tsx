@@ -24,13 +24,15 @@ import { useFocusEffect } from "expo-router";
 import NavigationMenu from "@/components/navigationMenu/NavigationMenu";
 import { Colors } from "@/constants/Colors";
 import { langStore } from "@/helpers/stores/language/languageStore";
+import { SocketStore } from "@/helpers/stores/socket/socketStore";
 
 const Notifications = () => {
   const [url, setUrl] = useState("");
   const [role, setRole] = useState<string | null>(null);
   const { langData } = langStore();
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const { notificationSocket } = SocketStore();
+  // const [expandedId, setExpandedId] = useState<number | null>(null);
 
   useEffect(() => {}, []);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -52,7 +54,6 @@ const Notifications = () => {
   );
 
   // console.log(response);
-  
 
   useFocusEffect(
     useCallback(() => {
@@ -68,6 +69,21 @@ const Notifications = () => {
       fetchRole();
     }, [])
   );
+
+  useEffect(() => {
+    if (notificationSocket) {
+      const fetchRole = async () => {
+        const storedRole = await AsyncStorage.getItem("role");
+        setRole(storedRole);
+        if (storedRole === "ROLE_SELLER") {
+          setUrl(seller_notification);
+        } else if (storedRole === "ROLE_TERMINAL") {
+          setUrl(terminal_notification);
+        }
+      };
+      fetchRole();
+    }
+  }, [notificationSocket]);
 
   useFocusEffect(
     useCallback(() => {
@@ -87,7 +103,8 @@ const Notifications = () => {
     if (isReadNotification.response) {
       globalDataFunc();
     } else if (isReadNotification.error) {
-      Alert.alert("QR - Pay",
+      Alert.alert(
+        "QR - Pay",
         isReadNotification?.error?.message ||
           langData?.MOBILE_ERROR ||
           "Произошла ошибка"
@@ -97,12 +114,13 @@ const Notifications = () => {
 
   useEffect(() => {
     if (deleteNotification.response) {
-      setPage(0)
-      Alert.alert("QR - Pay","Уведомления удалены.");
+      setPage(0);
+      Alert.alert("QR - Pay", "Уведомления удалены.");
       globalDataFunc();
       setModalVisible(false);
     } else if (deleteNotification.error) {
-      Alert.alert("QR - Pay",
+      Alert.alert(
+        "QR - Pay",
         deleteNotification?.error?.message ||
           langData?.MOBILE_ERROR ||
           "Произошла ошибка"
@@ -135,7 +153,8 @@ const Notifications = () => {
         await setSelectedIds(ids);
         await isReadNotification.globalDataFunc();
       } else {
-        Alert.alert("QR - Pay",
+        Alert.alert(
+          "QR - Pay",
           langData?.MOBILE_NOTIFICATIONS_NOT_FOUND || "У вас нет уведомлений."
         );
       }
@@ -150,7 +169,8 @@ const Notifications = () => {
         await setSelectedIds(ids);
         await deleteNotification.globalDataFunc();
       } else {
-        Alert.alert("QR - Pay",
+        Alert.alert(
+          "QR - Pay",
           langData?.MOBILE_NOTIFICATIONS_NOT_FOUND || "У вас нет уведомлений."
         );
       }
@@ -161,7 +181,9 @@ const Notifications = () => {
     <View style={styles.container}>
       <NavigationMenu name={langData?.MOBILE_NOTIFICATIONS || "Уведомление"} />
       <View style={styles.header}>
-        <View style={{ flexDirection: "row", justifyContent: "flex-start", gap: 5 }}>
+        <View
+          style={{ flexDirection: "row", justifyContent: "flex-start", gap: 5 }}
+        >
           <Text style={styles.headerText}>
             {langData?.MOBILE_NOTIFICATIONS || "Уведомление"}
           </Text>
@@ -191,8 +213,8 @@ const Notifications = () => {
               merchant: string;
               amount: number;
               partner: string;
-              priceUz: string
-              priceRu: string
+              priceUz: string;
+              priceRu: string;
             }) => (
               <View
                 key={item.id}
@@ -263,7 +285,11 @@ const Notifications = () => {
                         // { width: "80%" },
                       ]}
                     >
-                      {(item?.priceUz || 0).toLocaleString('uz-UZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} UZS
+                      {(item?.priceUz || 0).toLocaleString("uz-UZ", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      UZS
                     </Text>
                   </View>
                   <View
@@ -283,7 +309,11 @@ const Notifications = () => {
                         // { width: "80%" },
                       ]}
                     >
-                      {(item?.priceRu || 0).toLocaleString('uz-UZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} RUB
+                      {(item?.priceRu || 0).toLocaleString("uz-UZ", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      RUB
                     </Text>
                   </View>
                 </View>
@@ -386,7 +416,7 @@ const Notifications = () => {
         toggleModal={() => setModalVisible(!modalVisible)}
         onConfirm={() => handleSelectAllIds()}
       >
-        <View style={{width: "100%", marginVertical :10}}>
+        <View style={{ width: "100%", marginVertical: 10 }}>
           <Text style={{ fontSize: 20 }}>
             {langData?.MOBILE_CONFIRM_DELETE_ALL ||
               "Вы уверены, что хотите удалить все уведомления?"}

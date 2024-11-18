@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getConfig, getConfigImg } from "../token";
 import { useMutation } from "react-query";
+import { langStore } from "../stores/language/languageStore";
 
 export interface UseGlobalResponse<T> {
     loading: boolean;
@@ -15,6 +16,7 @@ export function useGlobalRequest<T>(
     data?: T,
     configType: 'DEFAULT' | 'IMAGE' = 'DEFAULT'
 ): UseGlobalResponse<T> {
+    const {langData} = langStore()
     const mutation = useMutation({
         mutationFn: async () => {
             try {
@@ -47,7 +49,8 @@ export function useGlobalRequest<T>(
                 return res.data.data;
             } catch (error) {
                 console.error("Request failed:", error);
-                throw error; // Pass error to React Query's error handling
+                // throw error; // Pass error to React Query's error handling
+                alert(langData.ERROR_MOBILE || "Произошла ошибка")
             }
         },
     });

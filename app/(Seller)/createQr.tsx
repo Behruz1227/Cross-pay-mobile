@@ -36,7 +36,6 @@ const CreateQr = () => {
   const [Messageamount, setMessageAmount] = useState("");
   const [alertShown, setAlertShown] = useState(false);
   const [qrValue, setQrValue] = useState<any>(null);
-  const { setSocketData, setSocketModalData, socketData, } = SocketStore()
 
   // Error states
   const [amountError, setAmountError] = useState("");
