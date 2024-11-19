@@ -25,6 +25,9 @@ import PrivacyTermsPage from "./(Seller)/(shartlar)/PrivacyTermsPage";
 import InternetCheckModal from "./checkInternet";
 import { SocketStore } from "@/helpers/stores/socket/socketStore";
 import CallBackModal from "./callBackModal";
+import { SocketProvider } from "./socketContext";
+import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
+import { set_socket } from "@/helpers/url";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -41,7 +44,10 @@ export default function RootLayout() {
     socketModal,
     socketModalData,
     timer,
+    socketData
   } = SocketStore();
+
+  // const setSocket = useGlobalRequest(`${set_socket}${socketData?.id}`, "POST", {})
 
   useEffect(() => {
     if (socketModalData) {
@@ -49,6 +55,16 @@ export default function RootLayout() {
       setTimer(10); // 10 senlik sanashni o'qishni bosqichga olish
     }
   }, [socketModalData]);
+  // useEffect(() => {
+  //   if (socketData?.id) {
+  //     setSocket.globalDataFunc()
+  //     // globalPostFunction({
+  //     //   url: `${set_socket}${socketData?.id}`,
+  //     //   postData: {},
+  //     //   isToast: false
+  //     // })
+  //   }
+  // }, [socketData?.id]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -80,63 +96,79 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <QueryClientProvider client={queryClient}>
-        <CallBackModal/>
+      <SocketProvider>
+        <QueryClientProvider client={queryClient}>
+          <CallBackModal />
+          <SocketHandler socketData={socketData} />
 
-        <InternetCheckModal />
-        <Stack.Navigator
-          initialRouteName="index"
-          screenOptions={{ animation: "none" }}
-        >
-          <Stack.Screen
-            name="index"
-            component={Index}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="(tabs)"
-            component={TabLayout}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="+not-found" component={NotFoundScreen} />
-          <Stack.Screen component={CreateQr} name="(Seller)/(createQr)" />
-          <Stack.Screen
-            component={Login}
-            name="(auth)/login"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            component={TransactionDeatail}
-            name="(Seller)/(transactionsDetail)/transactionDetail"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            component={Notifications}
-            name="(Seller)/notifications/notifications"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            component={Welcome}
-            name="(welcome)/welcome"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            component={Profile}
-            name="(Seller)/(profile)/profile"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            component={CheckCode}
-            name="(auth)/checkCode"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            component={PrivacyTermsPage}
-            name="(Seller)/(shartlar)/PrivacyTermsPage"
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </QueryClientProvider>
+          <InternetCheckModal />
+          <Stack.Navigator
+            initialRouteName="index"
+            screenOptions={{ animation: "none" }}
+          >
+            <Stack.Screen
+              name="index"
+              component={Index}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="(tabs)"
+              component={TabLayout}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="+not-found" component={NotFoundScreen} />
+            <Stack.Screen component={CreateQr} name="(Seller)/(createQr)" />
+            <Stack.Screen
+              component={Login}
+              name="(auth)/login"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              component={TransactionDeatail}
+              name="(Seller)/(transactionsDetail)/transactionDetail"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              component={Notifications}
+              name="(Seller)/notifications/notifications"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              component={Welcome}
+              name="(welcome)/welcome"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              component={Profile}
+              name="(Seller)/(profile)/profile"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              component={CheckCode}
+              name="(auth)/checkCode"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              component={PrivacyTermsPage}
+              name="(Seller)/(shartlar)/PrivacyTermsPage"
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </QueryClientProvider>
+      </SocketProvider>
     </ThemeProvider>
   );
+}
+
+function SocketHandler({ socketData }: { socketData: any }) {
+  // const { setSocketModal, setTimer, setSocketModalData } = SocketStore();
+  const setSocket = useGlobalRequest(`${set_socket}${socketData?.id}`, "POST", {});
+
+  useEffect(() => {
+    if (socketData?.id) {
+      setSocket.globalDataFunc();
+    }
+  }, [socketData?.id]);
+
+  return null;
 }

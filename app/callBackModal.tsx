@@ -10,7 +10,7 @@ import { ReactNativeModal } from "react-native-modal";
 const { height, width } = Dimensions.get("window");
 
 const CallBackModal: React.FC = () => {
-  const { setSocketModal, socketModal, socketModalData, timer } = SocketStore();
+  const { setSocketModal, socketModal, socketModalData, timer, setTimer, setSocketModalData } = SocketStore();
   const { langData } = langStore();
   const paymentCancel = useGlobalRequest(
     `${cancel_payment}${socketModalData?.id}`,
@@ -120,12 +120,17 @@ const CallBackModal: React.FC = () => {
                   {socketModalData?.ext_id ? socketModalData.ext_id : '-'}
                 </Text>
               </View>
-              <View style={{ display: "flex", gap: 10 }}>
+              <View style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  gap: 10,
+                }}>
                 <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                  {langData?.CHEQUE_AMOUNT_UZS || "Сумма чека (uzs)"}:
+                  {langData?.MOBILE_AMOUNT_UZS || "Сумма чека (uzs)"}:
                 </Text>
                 <Text style={{ fontSize: 15 }}>
-                  {socketModalData?.amountUZS ? socketModalData.amountUZS : "-"}
+                  {socketModalData?.amountUZS ? socketModalData.amountUZS.toLocaleString() : "-"}
                 </Text>
               </View>
               <View
@@ -140,7 +145,7 @@ const CallBackModal: React.FC = () => {
                   {langData?.MOBILE_AMOUNT_RUB || "Сумма чека (rub)"}:
                 </Text>
                 <Text style={{ fontSize: 15 }}>
-                  {socketModalData?.amountRUB ? socketModalData.amountRUB : "-"}
+                  {socketModalData?.amountRUB ? socketModalData.amountRUB.toLocaleString() : "-"}
                 </Text>
               </View>
               <View
@@ -152,7 +157,7 @@ const CallBackModal: React.FC = () => {
                 }}
               >
                 <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                  {langData?.CHEQUE_AMOUNT_RUB || "Сумма чека (rub)"}:
+                  {langData?.MOBILE_STATUS || "Статус"}:
                 </Text>
                 <Text
                   style={[
@@ -187,19 +192,16 @@ const CallBackModal: React.FC = () => {
               <Buttons
                 backgroundColor={"#e8e8e8"}
                 title={
-                  paymentCancel.loading
-                    ? langData?.MOBILE_LOADING || "Загрузка..."
-                    : langData?.MOBILE_PAYMENT_CANCEL || "Отмена платежа"
+                  langData?.MOBILE_CLOSE || "Закрывать"
                 }
                 textColor={"red"}
                 onPress={() => {
-                  paymentCancel.globalDataFunc();
-                  setTimeout(() => {
                     setSocketModal(false);
-                  }, 2000);
+                    setTimer(10)
+                    setSocketModalData(null);
                 }}
               />
-              <Buttons
+              {/* <Buttons
                 backgroundColor={"#e8e8e8"}
                 title={
                   paymentConfirm.loading
@@ -214,7 +216,7 @@ const CallBackModal: React.FC = () => {
                     setSocketModal(false);
                   }, 2000);
                 }}
-              />
+              /> */}
             </View>
           </View>
         </View>

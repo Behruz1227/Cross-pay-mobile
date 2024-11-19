@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, TouchableOpacity, TouchableWithoutFeedback, Modal, Linking } from "react-native";
 import { Avatar } from "react-native-elements";
 import Feather from "@expo/vector-icons/Feather";
@@ -15,6 +15,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import CenteredModal from "../modal/modal-centered";
 import { langStore } from "@/helpers/stores/language/languageStore";
+import { SocketStore } from "@/helpers/stores/socket/socketStore";
 type SettingsScreenNavigationProp = NavigationProp<RootStackParamList, "(tabs)">;
 
 const Navbar = () => {
@@ -23,6 +24,7 @@ const Navbar = () => {
   const {langData} = langStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  const { notificationSocket } = SocketStore()
 
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
@@ -41,8 +43,25 @@ const Navbar = () => {
     }, [])
   );
 
+  useEffect(() => {
+    if (notificationSocket) {
+      const fetchRole = async () => {
+        const storedRole = await AsyncStorage.getItem("role");
+        if (storedRole === "ROLE_SELLER") {
+          setUrl(seller_notification_count);
+        } else if (storedRole === "ROLE_TERMINAL") {
+          setUrl(terminal_notification_count);
+        }
+      };
+      fetchRole()
+    }
+  }, [notificationSocket]);
+
   const getCount = useGlobalRequest(url, "GET");
   const getMee = useGlobalRequest(get_mee, "GET");
+
+  console.log(getMee.response);
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -115,17 +134,25 @@ const Navbar = () => {
           </View>
 
           <View style={{ position: "relative" }}>
+            {/* {true && ( */}
             {getCount.response > 0 && (
               <View
                 style={{
                   position: "absolute",
-                  width: 10,
-                  height: 10,
+                  top: -7,
+                  // right: -7,
+                  minWidth: 18,
+                  // height: 10,
+                  padding:2,
+                  display: "flex",
+                  justifyContent: "center",
                   backgroundColor: "red",
                   borderRadius: 50,
-                  right: 2,
+                  right: -6,
+                  alignItems: "center",
+                  zIndex: 100,
                 }}
-              ></View>
+              ><Text style={{color: "white", fontSize: 10}}>{getCount?.response > 99 ? "99+" : getCount?.response}</Text></View>
             )}
             <Text>
               <Feather
@@ -145,8 +172,8 @@ const Navbar = () => {
         </View>
       </View>
         <CenteredModal
-          btnRedText={langData?.MOBILE_CLOSE || "Закрывать"}
-          btnWhiteText={langData?.MOBILE_CONTINUE || "Продолжить"}
+          btnRedText={langData?.MOBILE_NO || "Нет"}
+          btnWhiteText={langData?.MOBILE_YES || "Да"}
           isFullBtn={true}
           isModal={isModalVisible}
           onConfirm={async () => {

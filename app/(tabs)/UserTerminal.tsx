@@ -349,6 +349,7 @@ export default function UserTerminal() {
             <TextInput
               placeholder={langData?.MOBILE_NAME || "Имя"} 
               style={styles.input}
+              maxLength={40}
               value={formData.firstName}
               onChangeText={(text) => handleInputChange("firstName", text)}
             />
@@ -356,6 +357,7 @@ export default function UserTerminal() {
             <TextInput
               placeholder={langData?.MOBILE_SURNAME || "Фамилия"} 
               style={styles.input}
+              maxLength={40}
               value={formData.lastName}
               onChangeText={(text) => handleInputChange("lastName", text)}
             />

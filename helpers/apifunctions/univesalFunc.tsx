@@ -50,7 +50,7 @@ export function useGlobalRequest<T>(
             } catch (error) {
                 console.error("Request failed:", error);
                 // throw error; // Pass error to React Query's error handling
-                alert(langData.ERROR_MOBILE || "Произошла ошибка")
+                // alert(langData.ERROR_MOBILE || "Произошла ошибка")
             }
         },
     });

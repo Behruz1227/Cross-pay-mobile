@@ -25,6 +25,7 @@ import ChangeLang from "./changeLang";
 import { langStore } from "@/helpers/stores/language/languageStore";
 import { getCountryByCca2 } from "react-native-international-phone-number";
 import PhoneInput from "react-native-international-phone-number";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 // Define the shape of the profile data
 interface ProfileData {
@@ -81,14 +82,13 @@ const Profile: React.FC = () => {
     lastName: formData.lastName,
     phone: `998${formData.phone.replace(/[^0-9]/g, "")}`,
     email: formData.email,
-    inn: formData.tin,
-    filial_code: formData.bankBik,
-    password: formData.password || null,
+    inn: formData.tin || null,
+    filial_code: formData.bankBik || null,
+    password: formData.password,
   }); // Adjust the type as per your API response
 
   const [errors, setErrors] = useState<ProfileErrors>({});
-  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-  const [submitting, setSubmitting] = useState<boolean>(false);
+  // const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
   // Open the modal and initialize form data
 
@@ -102,7 +102,7 @@ const Profile: React.FC = () => {
       bankBik: getMee?.response?.filial_code || "",
       password: "12345",
     });
-    console.log(getMee);
+    console.log(getMee.response);
     
     setDefaultPhone(getMee?.response?.phone || "");
     setErrors({});
@@ -120,13 +120,25 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (updateProfile.response) {
+      Alert.alert(
+        langData?.SUCCESS || "Успех",
+        langData?.PROFILE_UPDATED || "Профиль успешно обновлен."
+      );
+      closeModal();
+      getMee.globalDataFunc(); // Refresh profile data
       AsyncStorage.setItem("token", updateProfile.response);
       const deadline = new Date();
         deadline.setDate(deadline.getDate() + 5);
         const formattedDeadline = deadline.toISOString().split('T')[0];
         AsyncStorage.setItem("deadline", formattedDeadline);
+    } else if (updateProfile.error) {
+      Alert.alert(
+        langData?.ERROR || "Ошибка",
+        langData?.PROFILE_UPDATE_ERROR ||
+          "Произошла ошибка при обновлении профиля."
+      );
     }
-  }, [updateProfile.response]);
+  }, [updateProfile.response, updateProfile.error]);
 
   // Handle input changes
   // console.log(formData.phone);
@@ -189,26 +201,7 @@ const Profile: React.FC = () => {
       return;
     }
 
-    setSubmitting(true);
-
-    try {
       await updateProfile.globalDataFunc();
-
-      Alert.alert(
-        langData?.SUCCESS || "Успех",
-        langData?.PROFILE_UPDATED || "Профиль успешно обновлен."
-      );
-      closeModal();
-      getMee.globalDataFunc(); // Refresh profile data
-    } catch (error) {
-      Alert.alert(
-        langData?.ERROR || "Ошибка",
-        langData?.PROFILE_UPDATE_ERROR ||
-          "Произошла ошибка при обновлении профиля."
-      );
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   return (
@@ -299,7 +292,7 @@ const Profile: React.FC = () => {
           <CenteredModal
             btnRedText={langData?.MOBILE_CANCEL || "Отмена"}
             btnWhiteText={
-              submitting
+              updateProfile.loading
                 ? langData?.MOBILE_LOADING || "Загрузка..."
                 : langData?.MOBILE_SAVE || "Сохранять"
             }
@@ -321,6 +314,7 @@ const Profile: React.FC = () => {
                   style={styles.input}
                   placeholder={langData?.MOBILE_NAME || "Имя"}
                   value={formData.firstName}
+                  maxLength={40}
                   onChangeText={(text) => handleInputChange("firstName", text)}
                 />
                 {errors.firstName && (
@@ -332,6 +326,7 @@ const Profile: React.FC = () => {
                 </Text>
                 <TextInput
                   style={styles.input}
+                  maxLength={40}
                   placeholder={langData?.MOBILE_SURNAME || "Фамилия"}
                   value={formData.lastName}
                   onChangeText={(text) => handleInputChange("lastName", text)}
@@ -382,6 +377,7 @@ const Profile: React.FC = () => {
                   placeholder={langData?.MOBILE_EMAIL || "Электронная почта"}
                   keyboardType="email-address"
                   value={formData.email}
+                  maxLength={50}
                   onChangeText={(text) => handleInputChange("email", text)}
                   autoCapitalize="none"
                 />
@@ -413,6 +409,7 @@ const Profile: React.FC = () => {
                       style={styles.input}
                       placeholder={langData?.MOBILE_MFO || "МФО"}
                       value={formData.bankBik}
+                      maxLength={10}
                       onChangeText={(text) =>
                         handleInputChange("bankBik", text)
                       }

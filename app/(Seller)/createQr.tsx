@@ -13,7 +13,12 @@ import {
   Alert,
 } from "react-native";
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
-import { createPayment, UserTerminalListGet } from "@/helpers/url";
+import {
+  createPayment,
+  payment_get_seller,
+  payment_get_terminal,
+  UserTerminalListGet,
+} from "@/helpers/url";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { RenderQRCode } from "@/components/QRgenerate";
 import { useAuthStore } from "@/helpers/stores/auth/auth-store";
@@ -24,7 +29,9 @@ import { Menu } from "react-native-paper";
 import { Button } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import Navbar from "@/components/navbar/navbar";
-import PhoneInput, { getCountryByCca2 } from "react-native-international-phone-number";
+import PhoneInput, {
+  getCountryByCca2,
+} from "react-native-international-phone-number";
 import { SocketStore } from "@/helpers/stores/socket/socketStore";
 
 const CreateQr = () => {
@@ -46,7 +53,7 @@ const CreateQr = () => {
     createPayment,
     "POST",
     {
-      amount: amount,
+      amount: amount.replace(/[^0-9]/g, ""),
       // phone: `7${phone.replace(/[^0-9]/g, "")}`,
       terminalId: terminalId,
       // socketId: socketData?.id
@@ -73,7 +80,7 @@ const CreateQr = () => {
       setAlertShown(true);
     } else if (paymentCreate.error && !alertShown) {
       setMessageAmount("0");
-      Alert.alert("QR - Pay",paymentCreate.error);
+      Alert.alert("QR - Pay", paymentCreate.error);
       setQrValue(null);
       setAlertShown(true);
     }
@@ -87,13 +94,13 @@ const CreateQr = () => {
   const handleValidation = () => {
     let valid = true;
     if (!amount) {
-      setAmountError("Amount is required");
+      setAmountError(langData?.MOBILE_ENTER_AMOUNT || "Введите сумму");
       valid = false;
     } else {
       setAmountError("");
     }
     // if (!phone) {
-    //   if (phoneNumber === "77 308 8888" && phoneNumber.replace(/ /g, "").length !== 9) { 
+    //   if (phoneNumber === "77 308 8888" && phoneNumber.replace(/ /g, "").length !== 9) {
     //     setPhoneError("Enter a valid phone number");
     //     valid = false;
     //   } else if (phoneNumber.replace(/ /g, "").length === 10) {
@@ -104,7 +111,9 @@ const CreateQr = () => {
     //   setPhoneError("");
     // }
     if (terminalId === 0) {
-      setTerminalIdError("Select a terminal");
+      setTerminalIdError(
+        langData?.MOBILE_SELECT_TERMINAL || "Выберите терминал"
+      );
       valid = false;
     } else {
       setTerminalIdError("");
@@ -117,7 +126,9 @@ const CreateQr = () => {
       if (phoneNumber !== "77 308 8888") {
         paymentCreate.globalDataFunc();
       } else {
-        setQrValue("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrOTk4OTkzMzkzMzAwIiwiaWF0IjoxNzI5NTE5MDkwLCJleHAiOjE4MTU5MTkwOTB9.KPFsBeSXDMTBKi1f157OYOAIyY_MiZEVXtJLh3rKMVIIv4D5TsPqSvRVAP9cgcERjRSQTPiEUz1G2fQs4_jq2g");
+        setQrValue(
+          "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrOTk4OTkzMzkzMzAwIiwiaWF0IjoxNzI5NTE5MDkwLCJleHAiOjE4MTU5MTkwOTB9.KPFsBeSXDMTBKi1f157OYOAIyY_MiZEVXtJLh3rKMVIIv4D5TsPqSvRVAP9cgcERjRSQTPiEUz1G2fQs4_jq2g"
+        );
         setMessageAmount(amount);
       }
     }
@@ -144,13 +155,18 @@ const CreateQr = () => {
                 mode="dropdown"
                 dropdownIconColor={Colors.light.primary}
                 dropdownIconRippleColor={Colors.light.primary}
-                style={[styles.picker, Platform.OS === 'ios' ? {height: 150} : null]}
-                itemStyle={Platform.OS === 'ios' ? {height: 150} : null}
+                style={[
+                  styles.picker,
+                  Platform.OS === "ios" ? { height: 150 } : null,
+                ]}
+                itemStyle={Platform.OS === "ios" ? { height: 150 } : null}
                 selectedValue={terminalId}
                 onValueChange={(itemValue: any) => setTerminalId(itemValue)}
               >
                 <Picker.Item
-                  label={langData?.MOBILE_SELECT_TERMINAL || "Выберите терминал"}
+                  label={
+                    langData?.MOBILE_SELECT_TERMINAL || "Выберите терминал"
+                  }
                   value={0}
                 />
                 {terminalList?.response?.map((terminal: any) => (
@@ -162,7 +178,9 @@ const CreateQr = () => {
                 ))}
               </Picker>
             </View>
-            {terminalIdError ? <Text style={styles.errorText}>{terminalIdError}</Text> : null}
+            {terminalIdError ? (
+              <Text style={styles.errorText}>{terminalIdError}</Text>
+            ) : null}
 
             {/* <Text style={styles.label}>
               {langData?.MOBILE_ENTER_PHONE_NUMBER || "Введите номер телефона"}
@@ -186,39 +204,46 @@ const CreateQr = () => {
               {langData?.MOBILE_ENTER_AMOUNT || "Введите сумму"}
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TextInput
+            <TextInput
                 style={[styles.amountInput, { flex: 1 }]}
                 value={amount}
-                onChangeText={(text) => setAmount(text.replace(/[^0-9]/g, ""))}
+                maxLength={11}
+                onChangeText={(text) => {
+                  // Sonlarni formatlash: 1000 -> 1,000
+                  const formattedText = text.replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                  setAmount(formattedText);
+                }}
                 keyboardType="numeric"
-            />
+              />
               <Text style={{ marginLeft: 10, fontSize: 25 }}>
                 {langData?.MOBILE_UZS || "сум"}
               </Text>
             </View>
 
-            {amountError ? <Text style={styles.errorText}>{amountError}</Text> : null}
+            {amountError ? (
+              <Text style={styles.errorText}>{amountError}</Text>
+            ) : null}
 
             {qrValue ? (
               <View style={styles.qrContainer}>
                 <View style={{ paddingVertical: 10 }}>
                   <Text style={styles.qrTextTop}>
-                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${Messageamount || "0"} ${"UZS"}`}
+                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${
+                      Messageamount || "0"
+                    } ${"UZS"}`}
                   </Text>
                 </View>
                 <ErrorBoundary>
                   <RenderQRCode url={qrValue || null} />
                 </ErrorBoundary>
                 <Text style={styles.qrText}>
-                  {langData?.MOBILE_SCAN_QR || "Отсканируйте этот QR-код, чтобы продолжить"}
+                  {langData?.MOBILE_SCAN_QR ||
+                    "Отсканируйте этот QR-код, чтобы продолжить"}
                 </Text>
               </View>
             ) : null}
           </View>
-          <TouchableOpacity
-            style={styles.sendButton}
-            onPress={handleSubmit}
-          >
+          <TouchableOpacity style={styles.sendButton} onPress={handleSubmit}>
             <Text style={styles.sendButtonText}>
               {paymentCreate.loading ? (
                 <ActivityIndicator size="small" color="#fff" />
@@ -236,8 +261,8 @@ const CreateQr = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    paddingVertical: Platform.OS === 'android' ? 35 : 0,
+    backgroundColor: "#F5F5F5",
+    paddingVertical: Platform.OS === "android" ? 35 : 0,
   },
   label: {
     fontSize: 16,

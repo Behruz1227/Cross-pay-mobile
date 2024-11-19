@@ -308,6 +308,7 @@ const Terminal: React.FC = () => {
                   key={key}
                   placeholder={label}
                   style={styles.input}
+                  
                   value={formData[key as keyof typeof formData]}
                   onChangeText={(text) =>
                     handleInputChange(key as keyof typeof formData, text)

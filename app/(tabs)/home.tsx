@@ -39,8 +39,7 @@ export default function HomeScreen() {
   const [page, setPage] = useState(0);
   const [backPressCount, setBackPressCount] = useState(0);
   const { langData, setLangData } = langStore();
-  const socketRef = useRef<Socket | null>(null);
-  const { setSocketData, socketData, setSocketModalData, setNotificationSocket} = SocketStore();
+  
   const { response, globalDataFunc, loading } = useGlobalRequest(
     staisticUrl,
     "GET",
@@ -53,73 +52,7 @@ export default function HomeScreen() {
   );
   const getLangData = useGlobalRequest(`${words_get_data}MOBILE`, "GET");
 
-  const connectSocket = () => {
-    if (role !== "ROLE_SUPER_ADMIN") {
-      
-      if (socketRef.current) {
-        socketRef?.current?.disconnect(); // Eskisini uzib tashlaymiz
-      }
-      socketRef.current = io('https://my.qrpay.uz', {
-        transports: ['websocket'], // Faqat WebSocket transportini ishlatish
-    secure: true
-      });
-      
-
-      socketRef?.current.on('connect', () => {
-        console.log('Connected to Socket.IO server ID: ' + socketRef?.current?.id);
-        setSocketData(socketRef.current);
-      });
-
-      socketRef.current.on('notification', (data) => {
-        console.log('Notification data:', data);
-        setNotificationSocket(data);
-      });
-
-      socketRef.current.on('callback-web-or-app', (data) => {
-        console.log('calback data:', data);
-        setSocketModalData(data);
-      });
-
-       socketRef.current.on('test', (data) => {
-        console.log('Received data:', data);
-        setSocketModalData(data);
-      });
-
-      socketRef.current.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
-        setTimeout(() => {
-          console.log('Retrying to connect socket...');
-          connectSocket(); // Qayta ulanish
-        }, 5000);
-      });
-    }
-
-  };
-
-  useEffect(() => {
-    // if (role === "ROLE_SUPER_ADMIN") {
-      connectSocket(); // Ilk bor socketni ulaymiz
-    // }
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect(); // Unmount qilinganda socketni uzamiz
-      }
-    };
-
-  }, []);
-
-  useEffect(() => {
-    if (role !== "ROLE_SUPER_ADMIN") {
-      if (socketRef.current && !socketRef.current.connected) {
-        connectSocket(); // Agar socket ulanmagan bo'lsa, qayta ulash
-      }
-    }
-  }, [socketRef]); // Sahifa va o'lcham o'zgarsa qayta ulanish
-
-  console.log("socketData", socketData);
-  console.log("socketData id", socketData?.id);
-  console.log("socketData connected", socketData?.connected);
-  console.log("socket2", socketData);
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -232,11 +165,12 @@ export default function HomeScreen() {
               onPress={() => {}}
             />
             <TransactionActionCard
-              title={langData?.MOBILE_COMPLETED_TRANSACTIONS || "Завершенные транзакции"}
+              title={
+                langData?.MOBILE_COMPLETED_TRANSACTIONS ||
+                "Завершенные транзакции"
+              }
               desc={
-                response &&
-                response?.completedCount &&
-                response?.completedCount
+                response && response?.completedCount && response?.completedCount
               }
               icon={
                 <FontAwesome6
@@ -252,7 +186,10 @@ export default function HomeScreen() {
         {role === "ROLE_SELLER" && (
           <View style={{ flexDirection: "row", gap: 5 }}>
             <TransactionActionCard
-              title={langData?.MOBILE_CANCELLED_TRANSACTIONS || "Отмененные транзакции"}
+              title={
+                langData?.MOBILE_CANCELLED_TRANSACTIONS ||
+                "Отмененные транзакции"
+              }
               desc={response && response.cancelCount}
               icon={
                 <MaterialIcons
@@ -264,7 +201,9 @@ export default function HomeScreen() {
               onPress={() => {}}
             />
             <TransactionActionCard
-              title={langData?.MOBILE_WAITING_TRANSACTIONS || "Ожидающие транзакции"}
+              title={
+                langData?.MOBILE_WAITING_TRANSACTIONS || "Ожидающие транзакции"
+              }
               desc={response && response?.waitCount}
               icon={
                 <MaterialIcons
@@ -280,12 +219,13 @@ export default function HomeScreen() {
         {role === "ROLE_SELLER" && (
           <View style={{ flexDirection: "row", gap: 5, flexWrap: "wrap" }}>
             <TransactionActionHeadCard
-              title={langData?.MOBILE_TERMINAL_USERS || "Количество пользователей терминала"}
-              desc={
-                `${response && response?.userCount
-                  ? response?.userCount
-                  : 0}`
+              title={
+                langData?.MOBILE_TERMINAL_USERS ||
+                "Количество пользователей терминала"
               }
+              desc={`${
+                response && response?.userCount ? response?.userCount : 0
+              }`}
               icon={
                 <FontAwesome5
                   name="users"
@@ -296,12 +236,14 @@ export default function HomeScreen() {
               onPress={() => {}}
             />
             <TransactionActionHeadCard
-              title={langData?.MOBILE_CONFIRMED_PAYMENTS || "Подтвержденные платежи"}
-              desc={
-                `${response && response?.balanceCompleted
-                  ? response?.balanceCompleted.toFixed(2)
-                  : 0} UZS`
+              title={
+                langData?.MOBILE_CONFIRMED_PAYMENTS || "Подтвержденные платежи"
               }
+              desc={`${
+                response && response?.balanceCompleted
+                  ? response?.balanceCompleted.toFixed(2)
+                  : 0
+              } UZS`}
               icon={
                 <FontAwesome5
                   name="money-bill"
@@ -313,9 +255,11 @@ export default function HomeScreen() {
             />
             <TransactionActionHeadCard
               title={langData?.MOBILE_WAITING_PAYMENTS || "Ожидающие платежи"}
-              desc={
-                `${response && response?.balanceWait ? response?.balanceWait.toFixed(2) : 0} UZS`
-              }
+              desc={`${
+                response && response?.balanceWait
+                  ? response?.balanceWait.toFixed(2)
+                  : 0
+              } UZS`}
               icon={
                 <FontAwesome5
                   name="money-bill"
@@ -326,12 +270,14 @@ export default function HomeScreen() {
               onPress={() => {}}
             />
             <TransactionActionHeadCard
-              title={langData?.MOBILE_CANCELLED_PAYMENTS || "Отмененные платежи"}
-              desc={
-                `${response && response?.balanceCancel
-                  ? response?.balanceCancel.toFixed(2)
-                  : 0} UZS`
+              title={
+                langData?.MOBILE_CANCELLED_PAYMENTS || "Отмененные платежи"
               }
+              desc={`${
+                response && response?.balanceCancel
+                  ? response?.balanceCancel.toFixed(2)
+                  : 0
+              } UZS`}
               icon={
                 <FontAwesome5
                   name="money-bill"
@@ -345,9 +291,12 @@ export default function HomeScreen() {
         )}
         <View style={styles.header}>
           <Text style={styles.headerText}>
-            {langData?.MOBILE_PAYMENTS || "Платежи"}({transactionGet?.response?.totalElements})
+            {langData?.MOBILE_PAYMENTS || "Платежи"}(
+            {transactionGet?.response?.totalElements})
           </Text>
-          <Text style={styles.headerText}>({((page) * 10)} - { ((page) * 10 +10)})</Text>
+          <Text style={styles.headerText}>
+            ({page * 10} - {page * 10 + 10})
+          </Text>
           {/* <Text style={styles.headerText}>{langData?.MOBILE_CURRENT || "Текущий"}({page + 1})</Text> */}
         </View>
 
@@ -358,7 +307,9 @@ export default function HomeScreen() {
             renderItem={({ item }) => <TransactionCard transaction={item} />}
           />
         ) : (
-          <Text style={styles.noDataText}>{langData?.MOBILE_PAYMENT_NOT_FOUND || "Платеж не найден."}</Text>
+          <Text style={styles.noDataText}>
+            {langData?.MOBILE_PAYMENT_NOT_FOUND || "Платеж не найден."}
+          </Text>
         )}
         {transactionGet?.response?.object.length > 0 && (
           <View style={styles.paginationContainer}>
