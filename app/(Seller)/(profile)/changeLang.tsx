@@ -6,7 +6,6 @@ import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
 import { words_get_data, words_get_language, words_post_language } from "@/helpers/url";
 import { useFocusEffect } from "expo-router";
 import { langStore } from "@/helpers/stores/language/languageStore";
-import { Image } from "react-native-svg";
 
 const ChangeLang = () => {
   const [selectedLang, setSelectedLang] = useState<string | null>(null);

@@ -96,6 +96,15 @@ const CreateQr = () => {
     if (!amount) {
       setAmountError(langData?.MOBILE_ENTER_AMOUNT || "Введите сумму");
       valid = false;
+    } else if (
+      amount && +amount.replace(/[^0-9]/g, "") < 10000 ||
+      +amount.replace(/[^0-9]/g, "") > 150000000
+    ) {
+      setAmountError(
+        langData?.MOBILE_AMOUNT_LIMIT ||
+          "Сумма должна быть в пределах от 10 000 до 150 000 000 UZS"
+      );
+      valid = false;
     } else {
       setAmountError("");
     }
@@ -204,13 +213,15 @@ const CreateQr = () => {
               {langData?.MOBILE_ENTER_AMOUNT || "Введите сумму"}
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TextInput
+              <TextInput
                 style={[styles.amountInput, { flex: 1 }]}
                 value={amount}
                 maxLength={11}
                 onChangeText={(text) => {
                   // Sonlarni formatlash: 1000 -> 1,000
-                  const formattedText = text.replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                  const formattedText = text
+                    .replace(/[^0-9]/g, "")
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                   setAmount(formattedText);
                 }}
                 keyboardType="numeric"
