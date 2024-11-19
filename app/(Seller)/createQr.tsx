@@ -64,7 +64,13 @@ const CreateQr = () => {
 
   useFocusEffect(
     useCallback(() => {
-      terminalList.globalDataFunc();
+      // Ma'lumotlarni tozalash
+      setAmount("");
+      setTerminalIdError("");
+      setAmountError("");
+      setPhoneNumber("");
+      setQrValue(null);
+      terminalList.globalDataFunc(); // Terminal ro'yxatini yangilash
       const fetchPhoneNumber = async () => {
         const number = await AsyncStorage.getItem("phoneNumber");
         setPhoneNumber(number || "");
@@ -89,6 +95,12 @@ const CreateQr = () => {
   useEffect(() => {
     setAlertShown(false);
   }, [amount]);
+
+  useEffect(() => {
+    if (terminalList?.response?.length > 0) { // Fix the condition
+      setTerminalId(terminalList.response[0].id); // Correct the syntax
+    }
+  }, [terminalList?.response]);
 
   // Validate fields on submit
   const handleValidation = () => {
@@ -169,7 +181,7 @@ const CreateQr = () => {
                   Platform.OS === "ios" ? { height: 150 } : null,
                 ]}
                 itemStyle={Platform.OS === "ios" ? { height: 150 } : null}
-                selectedValue={terminalId}
+                selectedValue={terminalList?.response?.length > 0 ? terminalList.response[0].id : terminalId}
                 onValueChange={(itemValue: any) => setTerminalId(itemValue)}
               >
                 <Picker.Item
@@ -178,7 +190,7 @@ const CreateQr = () => {
                   }
                   value={0}
                 />
-                {terminalList?.response?.map((terminal: any) => (
+                {terminalList?.response?.length > 0 && terminalList?.response?.map((terminal: any) => (
                   <Picker.Item
                     key={terminal.id}
                     label={terminal.name}
