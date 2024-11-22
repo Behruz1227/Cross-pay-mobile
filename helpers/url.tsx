@@ -1,10 +1,10 @@
-const apiLink = 'https://apk.qrpay.uz/' 
+const apiLink = 'https://apk.qrpay.uz/api/' 
 
 
 export const staisticUrl = `${apiLink}statistics/seller`
-export const loginUrl = `${apiLink}api/user/login` //
-export const sendCodeUrl = `${apiLink}api/user/send-code` //
-export const set_socket = `${apiLink}api/user/save-socket-id?socketId=`;
+export const loginUrl = `${apiLink}user/login` //
+export const sendCodeUrl = `${apiLink}user/send-code` //
+export const set_socket = `${apiLink}user/save-socket-id?socketId=`;
 
 export const createPayment = `${apiLink}payment/create`  //
 export const cancel_payment = `${apiLink}payment/cancel?orderId=`  //
@@ -18,7 +18,7 @@ export const post_terminal = `${apiLink}terminal/add-terminal-user`
 export const payment_get_seller = `${apiLink}payment/list/for/seller` //
 export const payment_get_terminal = `${apiLink}payment/list/for/terminal` //
 
-export const UserTerminalGet = `${apiLink}api/user/terminal` //
+export const UserTerminalGet = `${apiLink}user/terminal` //
 export const UserTerminalListGet = `${apiLink}terminal/select-terminal-list`
 export const UserTerminaldelete = `${apiLink}terminal/delete-terminal-user`
 
@@ -30,8 +30,8 @@ export const seller_notification_count = `${apiLink}notification/count/for-selle
 export const terminal_notification_count = `${apiLink}notification/count/for-terminal`
 
 
-export const get_mee = `${apiLink}api/user/me`
-export const update_profile = `${apiLink}api/user/update`
+export const get_mee = `${apiLink}user/me`
+export const update_profile = `${apiLink}user/update`
 
 // WORDS CONTROLLER
 export const words_get = `${apiLink}words?status=`

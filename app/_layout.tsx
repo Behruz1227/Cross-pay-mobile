@@ -47,7 +47,6 @@ export default function RootLayout() {
     socketData
   } = SocketStore();
 
-  // const setSocket = useGlobalRequest(`${set_socket}${socketData?.id}`, "POST", {})
 
   useEffect(() => {
     if (socketModalData) {
@@ -55,16 +54,7 @@ export default function RootLayout() {
       setTimer(10); // 10 senlik sanashni o'qishni bosqichga olish
     }
   }, [socketModalData]);
-  // useEffect(() => {
-  //   if (socketData?.id) {
-  //     setSocket.globalDataFunc()
-  //     // globalPostFunction({
-  //     //   url: `${set_socket}${socketData?.id}`,
-  //     //   postData: {},
-  //     //   isToast: false
-  //     // })
-  //   }
-  // }, [socketData?.id]);
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
