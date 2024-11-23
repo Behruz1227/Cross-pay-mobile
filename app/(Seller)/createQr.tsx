@@ -86,7 +86,7 @@ const CreateQr = () => {
       setAlertShown(true);
     } else if (paymentCreate.error && !alertShown) {
       setMessageAmount("0");
-      Alert.alert("QR - Pay", paymentCreate.error);
+      Alert.alert("QR - Pay", paymentCreate.error); //---
       setQrValue(null);
       setAlertShown(true);
     }

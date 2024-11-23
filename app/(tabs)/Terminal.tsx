@@ -80,12 +80,12 @@ const Terminal: React.FC = () => {
   
   useEffect(() => {
     if (editTerminal?.response) {
-      Alert.alert("QR - Pay",langData?.MOBILE_TERMINAL_SUCCESSFULLY_EDITED || "Терминал успешно отредактирован!");
+      Alert.alert("QR - Pay",langData?.MOBILE_TERMINAL_SUCCESSFULLY_EDITED || "Терминал успешно отредактирован!"); // ---
       setModalVisible(false);
       resetFormData();
       fetchTerminalList()
     } else if (editTerminal?.error) {
-      Alert.alert("QR - Pay", langData?.MOBILE_TERMINAL_ERROR_EDITED || "Произошла ошибка при редактировании терминала");
+      Alert.alert("QR - Pay", langData?.MOBILE_TERMINAL_ERROR_EDITED || "Произошла ошибка при редактировании терминала"); //---
     }
   }, [editTerminal.response, editTerminal.error]);
 

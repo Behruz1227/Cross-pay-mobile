@@ -364,6 +364,7 @@ export default function UserTerminal() {
 
             <Text style={styles.label}>{langData?.MOBILE_TELEPHONE || "Телефон"}</Text>
               <PhoneInput
+               placeholder={langData?.MOBILE_PHONE_PLASEHOLDER || "Введите номер телефона"}
                 selectedCountry={getCountryByCca2("UZ")} 
                 value={formData.phone}
                 onChangePhoneNumber={(text) => handleInputChange("phone", text)}

@@ -41,7 +41,7 @@ const ChangeLang = () => {
       getLang.globalDataFunc();
       getLangData.globalDataFunc();
     } else if (changeLang.error) {
-      Alert.alert("QR - Pay",changeLang.error);
+      Alert.alert("QR - Pay",changeLang.error); // ---
     }
   }, [changeLang.response, changeLang.error]);
 

@@ -353,6 +353,7 @@ const Profile: React.FC = () => {
                   maxLength={12}
                 /> */}
                 <PhoneInput
+                 placeholder={langData?.MOBILE_PHONE_PLASEHOLDER || "Введите номер телефона"}
                   onChangeSelectedCountry={(country) => {
                     // Handle country change if needed
                   }}

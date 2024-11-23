@@ -6,14 +6,14 @@ interface TransactionActionCardProps {
     title: string;
     icon: React.ReactNode;
     desc: number | string
-    onPress: () => void;
+    onPress?: () => void;
 }
 const { width, height } = Dimensions.get('window')
 
 
 const TransactionActionHeadCard = ({ title, desc, icon, onPress }: TransactionActionCardProps) => {
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress}>
+        <TouchableOpacity style={styles.card}>
             {icon}
             <View style={{ alignItems: 'center', marginTop: 6 }}>
                 <Text style={styles.title}>{title}</Text>

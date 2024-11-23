@@ -162,7 +162,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Pass the icon as a prop
-              onPress={() => {}}
+              
             />
             <TransactionActionCard
               title={
@@ -179,7 +179,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              onPress={() => {}}
+              
             />
           </View>
         )}
@@ -198,7 +198,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              onPress={() => {}}
+              
             />
             <TransactionActionCard
               title={
@@ -212,7 +212,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              onPress={() => {}}
+              
             />
           </View>
         )}
@@ -233,7 +233,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              onPress={() => {}}
+              
             />
             <TransactionActionHeadCard
               title={
@@ -251,7 +251,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              onPress={() => {}}
+              
             />
             <TransactionActionHeadCard
               title={langData?.MOBILE_WAITING_PAYMENTS || "Ожидающие платежи"}
@@ -267,7 +267,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              onPress={() => {}}
+              
             />
             <TransactionActionHeadCard
               title={
@@ -285,7 +285,7 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              onPress={() => {}}
+              
             />
           </View>
         )}

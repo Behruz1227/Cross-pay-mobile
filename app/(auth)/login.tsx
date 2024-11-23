@@ -24,6 +24,7 @@ import PhoneInput, {
 } from "react-native-international-phone-number";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { langStore } from "@/helpers/stores/language/languageStore";
 
 type SettingsScreenNavigationProp = NavigationProp<
   RootStackParamList,
@@ -36,6 +37,7 @@ const Login = () => {
   const [backPressCount, setBackPressCount] = useState(0);
   const [policy, setPolicy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const {langData} = langStore()
 
   const userData = {
     phone: `998${phoneNumber.replace(/ /g, "")}`,
@@ -55,7 +57,7 @@ const Login = () => {
           setLoading(false);
         })
         .catch((err) => {
-          Alert.alert("QR - Pay", "произошла ошибка");
+          Alert.alert("QR - Pay", "Произошла ошибка");
           setLoading(false);
         });
     }

@@ -115,7 +115,7 @@ const Notifications = () => {
   useEffect(() => {
     if (deleteNotification.response) {
       setPage(0);
-      Alert.alert("QR - Pay", "Уведомления удалены.");
+      Alert.alert("QR - Pay", langData?.MOBILE_DELETE_NOTIFICATION || "Уведомления удалены."); //---
       globalDataFunc();
       setModalVisible(false);
     } else if (deleteNotification.error) {

@@ -21,6 +21,7 @@ import { Colors } from "@/constants/Colors";
 import NavigationMenu from "@/components/navigationMenu/NavigationMenu";
 import axios from "axios";
 import { Alert } from "react-native";
+import { langStore } from "@/helpers/stores/language/languageStore";
 
 type SettingsScreenNavigationProp = NavigationProp<
   RootStackParamList,
@@ -35,6 +36,7 @@ const CheckCode = () => {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
   const inputRefs = useRef<Array<TextInput | null>>([]);
   const [response, setResponse] = useState<any>({});
+  const { langData } = langStore()
 
   const userData = {
     phone: `998${phoneNumber.split(" ").join("")}`,
@@ -55,7 +57,7 @@ const CheckCode = () => {
             Alert.alert("QR - Pay",res.data.error.message);
         })
         .catch((err) => {
-          Alert.alert("QR - Pay","произошла ошибка");
+          Alert.alert("QR - Pay", "Произошла ошибка");
         });
     }
   };
@@ -120,7 +122,7 @@ const CheckCode = () => {
         
         AsyncStorage.setItem("role", response?.role ? response?.role : null);
         if (response?.role === "ROLE_SUPER_ADMIN") {
-          Alert.alert("QR - Pay","Вы не можете войти в приложение");
+          Alert.alert("QR - Pay","Вы не можете войти в приложение"); // ---
         } else {
           navigation.navigate("(tabs)");
         }
