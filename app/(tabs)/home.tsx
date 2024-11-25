@@ -39,7 +39,7 @@ export default function HomeScreen() {
   const [page, setPage] = useState(0);
   const [backPressCount, setBackPressCount] = useState(0);
   const { langData, setLangData } = langStore();
-  
+
   const { response, globalDataFunc, loading } = useGlobalRequest(
     staisticUrl,
     "GET",
@@ -51,8 +51,6 @@ export default function HomeScreen() {
     "DEFAULT"
   );
   const getLangData = useGlobalRequest(`${words_get_data}MOBILE`, "GET");
-
-  
 
   useFocusEffect(
     useCallback(() => {
@@ -162,7 +160,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Pass the icon as a prop
-              
             />
             <TransactionActionCard
               title={
@@ -179,7 +176,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              
             />
           </View>
         )}
@@ -198,7 +194,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              
             />
             <TransactionActionCard
               title={
@@ -212,7 +207,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              
             />
           </View>
         )}
@@ -233,7 +227,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              
             />
             <TransactionActionHeadCard
               title={
@@ -251,7 +244,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              
             />
             <TransactionActionHeadCard
               title={langData?.MOBILE_WAITING_PAYMENTS || "Ожидающие платежи"}
@@ -267,7 +259,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              
             />
             <TransactionActionHeadCard
               title={
@@ -285,7 +276,6 @@ export default function HomeScreen() {
                   color={Colors.light.primary}
                 />
               } // Another icon
-              
             />
           </View>
         )}
@@ -333,12 +323,12 @@ export default function HomeScreen() {
                 if (page + 1 < transactionGet?.response?.totalPage)
                   setPage(page + 1);
               }}
-              disabled={page === transactionGet?.response?.totalPage}
+              disabled={page + 1 === transactionGet?.response?.totalPage}
             >
               <Text
                 style={[
                   styles.paginationButton,
-                  page === transactionGet?.response?.totalPage &&
+                  page + 1 === transactionGet?.response?.totalPage &&
                     styles.disabledButton,
                 ]}
               >

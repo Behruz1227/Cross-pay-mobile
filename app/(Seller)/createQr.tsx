@@ -58,7 +58,7 @@ const CreateQr = () => {
       terminalId: terminalId,
       // socketId: socketData?.id
     },
-    "DEFAULT"
+    "DEFAULT",
   );
   const terminalList = useGlobalRequest(UserTerminalListGet, "GET");
 
@@ -79,6 +79,7 @@ const CreateQr = () => {
     }, [])
   );
 
+  console.log(paymentCreate.response, 123);
   useEffect(() => {
     if (paymentCreate.response && !alertShown) {
       setMessageAmount(amount);
@@ -233,7 +234,8 @@ const CreateQr = () => {
                   // Sonlarni formatlash: 1000 -> 1,000
                   const formattedText = text
                     .replace(/[^0-9]/g, "")
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    .replace(/^0+/, "")
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
                   setAmount(formattedText);
                 }}
                 keyboardType="numeric"

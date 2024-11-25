@@ -215,7 +215,7 @@ const Terminal: React.FC = () => {
                   <Text style={styles.boldText}>{langData?.MOBILE_STATUS || "Статус"}:</Text>
                   <Text style={styles.cardDetail}>
                     {" "}
-                    {terminal?.status ? `${langData?.MOBILE_STATUS_ACTIVE || "Активный"}` : `${langData?.MOBILE_STATUS_DISACTIVE || "Неактивный"}` || "-"}
+                    {terminal?.status == ' ' ? `${langData?.MOBILE_STATUS_ACTIVE || "Активный"}` : `${langData?.MOBILE_STATUS_DISACTIVE || "Неактивный"}` || "-"}
                   </Text> 
                   {/* So'z qoldi */}
                 </View>

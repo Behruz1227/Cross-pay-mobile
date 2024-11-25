@@ -1,4 +1,5 @@
 // TransactionActionCard.js
+import { responsivePixel, responsiveSpacing } from '@/hooks/customWidth';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 
@@ -13,7 +14,7 @@ const { width, height } = Dimensions.get('window')
 
 const TransactionActionCard = ({ title, desc, icon, onPress }: TransactionActionCardProps) => {
     return (
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.card}>
             {icon}
             <View>
                 <Text style={styles.title}>{title}</Text>
@@ -28,10 +29,10 @@ const styles = StyleSheet.create({
         width: '49%',
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        paddingVertical: 22,
-        marginBottom: 12,
-        borderRadius: 8,
+        padding: responsivePixel(16),
+        paddingVertical: responsiveSpacing(22),
+        marginBottom: responsivePixel(12),
+        borderRadius: responsivePixel(8),
         backgroundColor: '#fff',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -40,12 +41,12 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     title: {
-        fontSize: 16,
+        fontSize: responsivePixel(16),
         color: 'gray',
         marginLeft: 10, // Space between icon and text
     },
     desc: {
-        fontSize: 16,
+        fontSize: responsivePixel(16),
         marginLeft: 10, // Space between icon and text
     },
 });

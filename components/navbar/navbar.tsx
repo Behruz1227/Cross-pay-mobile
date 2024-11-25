@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, TouchableOpacity, TouchableWithoutFeedback, Modal, Linking } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Modal,
+  Linking,
+} from "react-native";
 import { Avatar } from "react-native-elements";
 import Feather from "@expo/vector-icons/Feather";
 import { RootStackParamList } from "@/types/root/root";
@@ -16,15 +25,19 @@ import { MaterialIcons } from "@expo/vector-icons";
 import CenteredModal from "../modal/modal-centered";
 import { langStore } from "@/helpers/stores/language/languageStore";
 import { SocketStore } from "@/helpers/stores/socket/socketStore";
-type SettingsScreenNavigationProp = NavigationProp<RootStackParamList, "(tabs)">;
+import { truncateString } from "@/hooks/splice.text";
+type SettingsScreenNavigationProp = NavigationProp<
+  RootStackParamList,
+  "(tabs)"
+>;
 
 const Navbar = () => {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
   const [url, setUrl] = useState("");
-  const {langData} = langStore();
+  const { langData } = langStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
-  const { notificationSocket } = SocketStore()
+  const { notificationSocket } = SocketStore();
 
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
@@ -53,7 +66,7 @@ const Navbar = () => {
           setUrl(terminal_notification_count);
         }
       };
-      fetchRole()
+      fetchRole();
     }
   }, [notificationSocket]);
 
@@ -61,7 +74,6 @@ const Navbar = () => {
   const getMee = useGlobalRequest(get_mee, "GET");
 
   console.log(getMee.response);
-  
 
   useFocusEffect(
     useCallback(() => {
@@ -72,7 +84,7 @@ const Navbar = () => {
   );
   useFocusEffect(
     useCallback(() => {
-        getMee.globalDataFunc();
+      getMee.globalDataFunc();
     }, [])
   );
 
@@ -82,95 +94,150 @@ const Navbar = () => {
     }
   };
 
+  function getFullName(firstName: string, lastName: string) {
+    if (!lastName && firstName) return firstName;
+    if (!firstName && lastName) firstName = "-- --";
+    if (!firstName && !lastName) {
+      firstName = "-- --";
+      lastName = " ";
+    }
+
+    const fullName = `${firstName} ${lastName || ""}`;
+
+    if (fullName.length > 20) {
+      const truncatedLastName = fullName.slice(0, 20) + "...";
+      return truncatedLastName;
+    }
+
+    return fullName;
+  }
 
   return (
     <TouchableWithoutFeedback onPress={handleOutsidePress}>
-      <View >
-
-      <View style={styles.container}>
-        <Pressable onPress={() => navigation.navigate("(Seller)/(profile)/profile")}>
-          <View style={styles.greetingContainer}>
-            <Avatar
-              rounded
-              size="medium"
-              overlayContainerStyle={{ backgroundColor: "lightgray" }}
-              icon={{ name: "user", type: "font-awesome", color: "white" }}
-            />
-            <View style={styles.textContainer}>
-              <Text style={styles.greetingText}>{getMee?.response?.firstName ? getMee?.response?.firstName : "-- --"} {getMee?.response?.lastName && getMee?.response?.lastName}</Text>
-              <Text style={styles.subText}>{getMee?.response?.phone ? `+${getMee?.response?.phone.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')}` : "-- --- -- --"}</Text>
-            </View>
-          </View>
-        </Pressable>
-
-        <View style={{ flexDirection: "row", gap: 8, paddingRight: 10 }}>
-          <View style={{ position: "relative" }}>
-            <TouchableOpacity onPress={() => setShowSupport(!showSupport)}>
-              <MaterialIcons name="support-agent" size={25} color="black" />
-            </TouchableOpacity>
-
-            {showSupport && (
-              <Modal
-                transparent={true}
-                visible={showSupport}
-                onRequestClose={() => setShowSupport(false)}
-              >
-                <TouchableWithoutFeedback onPress={() => setShowSupport(false)}>
-                  <View style={styles.modalOverlay}>
-                    <TouchableWithoutFeedback>
-                      <View style={styles.supportPopover}>
-                        <TouchableOpacity onPress={() => Linking.openURL('mailto:Info@qrpay.uz')}>
-                          <Text style={styles.supportText}>{langData?.MOBILE_EMAIL || "Elektron pochta"}: Info@qrpay.uz</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => Linking.openURL('tel:+998773088888')}>
-                          <Text style={styles.supportText}>{langData?.MOBILE_TELEPHONE || "Телефон"}: +998 77 308 88 88</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </TouchableWithoutFeedback>
-                  </View>
-                </TouchableWithoutFeedback>
-              </Modal>
-            )}
-          </View>
-
-          <View style={{ position: "relative" }}>
-            {/* {true && ( */}
-            {getCount.response > 0 && (
-              <View
-                style={{
-                  position: "absolute",
-                  top: -7,
-                  // right: -7,
-                  minWidth: 18,
-                  // height: 10,
-                  padding:2,
-                  display: "flex",
-                  justifyContent: "center",
-                  backgroundColor: "red",
-                  borderRadius: 50,
-                  right: -6,
-                  alignItems: "center",
-                  zIndex: 100,
-                }}
-              ><Text style={{color: "white", fontSize: 10}}>{getCount?.response > 99 ? "99+" : getCount?.response}</Text></View>
-            )}
-            <Text>
-              <Feather
-                onPress={() => navigation.navigate("(Seller)/notifications/notifications")}
-                name="bell"
-                size={24}
-                color="black"
+      <View>
+        <View style={styles.container}>
+          <Pressable
+            onPress={() => navigation.navigate("(Seller)/(profile)/profile")}
+          >
+            <View style={styles.greetingContainer}>
+              <Avatar
+                rounded
+                size="medium"
+                overlayContainerStyle={{ backgroundColor: "lightgray" }}
+                icon={{ name: "user", type: "font-awesome", color: "white" }}
               />
-            </Text>
+              <View style={styles.textContainer}>
+                <Text style={styles.greetingText}>
+                  {/* {getMee?.response?.firstName
+                    ? getMee?.response?.firstName
+                    : "-- --"}{" "}
+                  {getMee?.response?.lastName && getMee?.response?.lastName &&
+                    truncateString(getMee?.response?.lastName, 10)} */}
+                  {getFullName(
+                    getMee?.response?.firstName,
+                    getMee?.response?.lastName
+                  )}
+                </Text>
+                <Text style={styles.subText}>
+                  {getMee?.response?.phone
+                    ? `+${getMee?.response?.phone.replace(
+                        /(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
+                        "$1 $2 $3 $4 $5"
+                      )}`
+                    : "-- --- -- --"}
+                </Text>
+              </View>
+            </View>
+          </Pressable>
+
+          <View style={{ flexDirection: "row", gap: 8, paddingRight: 10 }}>
+            <View style={{ position: "relative" }}>
+              <TouchableOpacity onPress={() => setShowSupport(!showSupport)}>
+                <MaterialIcons name="support-agent" size={25} color="black" />
+              </TouchableOpacity>
+
+              {showSupport && (
+                <Modal
+                  transparent={true}
+                  visible={showSupport}
+                  onRequestClose={() => setShowSupport(false)}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => setShowSupport(false)}
+                  >
+                    <View style={styles.modalOverlay}>
+                      <TouchableWithoutFeedback>
+                        <View style={styles.supportPopover}>
+                          <TouchableOpacity
+                            onPress={() =>
+                              Linking.openURL("mailto:Info@qrpay.uz")
+                            }
+                          >
+                            <Text style={styles.supportText}>
+                              {langData?.MOBILE_EMAIL || "Elektron pochta"}:
+                              Info@qrpay.uz
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => Linking.openURL("tel:+998773088888")}
+                          >
+                            <Text style={styles.supportText}>
+                              {langData?.MOBILE_TELEPHONE || "Телефон"}: +998 77
+                              308 88 88
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </Modal>
+              )}
+            </View>
+
+            <View style={{ position: "relative" }}>
+              {/* {true && ( */}
+              {getCount.response > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -7,
+                    // right: -7,
+                    minWidth: 18,
+                    // height: 10,
+                    padding: 2,
+                    display: "flex",
+                    justifyContent: "center",
+                    backgroundColor: "red",
+                    borderRadius: 50,
+                    right: -6,
+                    alignItems: "center",
+                    zIndex: 100,
+                  }}
+                >
+                  <Text style={{ color: "white", fontSize: 10 }}>
+                    {getCount?.response > 99 ? "99+" : getCount?.response}
+                  </Text>
+                </View>
+              )}
+              <Text>
+                <Feather
+                  onPress={() =>
+                    navigation.navigate("(Seller)/notifications/notifications")
+                  }
+                  name="bell"
+                  size={24}
+                  color="black"
+                />
+              </Text>
+            </View>
+            <Feather
+              onPress={openModal}
+              name="log-out"
+              size={24}
+              color="black"
+            />
           </View>
-          <Feather
-            onPress={openModal}
-            name="log-out"
-            size={24}
-            color="black"
-          />
         </View>
-      </View>
         <CenteredModal
           btnRedText={langData?.MOBILE_NO || "Нет"}
           btnWhiteText={langData?.MOBILE_YES || "Да"}
@@ -186,7 +253,8 @@ const Navbar = () => {
         >
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>
-            {langData?.MOBILE_CONFIRM_LOGOUT || "Вы действительно собираетесь выйти из системы?"}
+              {langData?.MOBILE_CONFIRM_LOGOUT ||
+                "Вы действительно собираетесь выйти из системы?"}
             </Text>
           </View>
         </CenteredModal>
@@ -220,9 +288,9 @@ const styles = StyleSheet.create({
   },
   supportPopover: {
     position: "absolute",
-    top: 60,  // Adjusted to move the popover lower
+    top: 60, // Adjusted to move the popover lower
     right: 20, // Adjusted to move it away from the right edge
-    width: 250,  // Adjust the width as needed
+    width: 250, // Adjust the width as needed
     backgroundColor: "white",
     padding: 10,
     borderRadius: 8,
@@ -241,7 +309,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "flex-end", // Align to the right but give space for the popover to move inwards
-    paddingRight: 20,  // Extra padding from the right edge
+    paddingRight: 20, // Extra padding from the right edge
   },
   modalContent: {
     justifyContent: "center",

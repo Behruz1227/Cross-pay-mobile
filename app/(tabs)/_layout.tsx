@@ -14,6 +14,7 @@ import UserTerminal from "./UserTerminal";
 import { useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { langStore } from "@/helpers/stores/language/languageStore";
+import { responsivePixel, responsiveSpacing } from "@/hooks/customWidth";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -40,13 +41,13 @@ export default function TabLayout() {
           tabBarInactiveTintColor: "gray",
           headerShown: false,
           tabBarStyle: {
-            height: 60,
+            height: responsivePixel(60),
             backgroundColor: "#f8f9fa",
             borderTopWidth: 0,
             position: "absolute",
-            bottom: 16,
-            left: 16,
-            right: 16,
+            bottom: responsivePixel(16),
+            left: responsivePixel(16),
+            right: responsivePixel(16),
             borderRadius: 30,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 10 },
@@ -64,12 +65,14 @@ export default function TabLayout() {
               title: langData?.MOBILE_PANEL_CONTROL || "Панель управления",
               tabBarIcon: ({ color, focused }) => (
                 <TabBarIcon
+                  size={responsivePixel(26)}
                   name={focused ? "home" : "home-outline"}
                   color={color}
                 />
               ),
               tabBarButton: (props) => (
                 <TouchableOpacity
+                
                   {...props}
                   onPress={(e) => {
                     props.onPress?.(e); // Use optional chaining
@@ -86,7 +89,7 @@ export default function TabLayout() {
           options={{
             title: langData?.MOBILE_PAYMENT || "Оплата",
             tabBarIcon: ({ color, focused }) => (
-              <AntDesign name="qrcode" size={34} color={color} />
+              <AntDesign name="qrcode" size={responsivePixel(30)} color={color} />
             ),
             tabBarButton: (props) => (
               <TouchableOpacity
@@ -109,7 +112,7 @@ export default function TabLayout() {
             options={{
               title: langData?.MOBILE_TERMINAL || "Терминал",
               tabBarIcon: ({ color, focused }) => (
-                <FontAwesome5 name="calculator" size={24} color={color} />
+                <FontAwesome5 name="calculator" size={responsivePixel(26)} color={color} />
               ),
               tabBarButton: (props) => (
                 <TouchableOpacity
@@ -131,7 +134,7 @@ export default function TabLayout() {
             options={{
               title: langData?.MOBILE_USER_TERMINAL || "Пользователи терминала",
               tabBarIcon: ({ color, focused }) => (
-                <FontAwesome5 name="users" size={24} color={color} />
+                <FontAwesome5 name="users" size={responsivePixel(26)} color={color} />
               ),
               tabBarButton: (props) => (
                 <TouchableOpacity

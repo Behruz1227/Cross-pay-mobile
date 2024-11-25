@@ -28,6 +28,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons"; // For password vi
 import { langStore } from "@/helpers/stores/language/languageStore";
 import { getCountryByCca2 } from "react-native-international-phone-number";
 import PhoneInput from "react-native-international-phone-number";
+import { truncateString } from "@/hooks/splice.text";
 
 interface UserTerminal {
   id: number;
@@ -225,15 +226,15 @@ export default function UserTerminal() {
               <View key={item.id} style={styles.card}>
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_TERMINAL_NAME || "Терминал Имя"}:</Text>
-                  <Text style={styles.cardDetail}>{item?.terminalName || "-"}</Text>
+                  <Text style={styles.cardDetail}>{truncateString(item?.terminalName || "-", 20)}</Text>
                 </View>
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_NAME || "Имя"}:</Text>
-                  <Text style={styles.cardDetail}>{item?.firstName || "-"}</Text>
+                  <Text style={styles.cardDetail}>{truncateString(item?.firstName || "-", 20)}</Text>
                 </View> 
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_SURNAME || "Фамилия"}:</Text>
-                  <Text style={styles.cardDetail}>{item?.lastName || "-"}</Text>
+                  <Text style={styles.cardDetail}>{truncateString(item?.lastName || "-", 20)}</Text>
                 </View> 
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_TELEPHONE || "Телефон"}:</Text>

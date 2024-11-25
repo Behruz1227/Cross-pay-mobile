@@ -85,7 +85,7 @@ const Profile: React.FC = () => {
     inn: formData.inn || null,
     filial_code: formData.filial_code || null,
     password: formData.password,
-  }, "DEFAULT", true); // Adjust the type as per your API response
+  }, "DEFAULT"); // Adjust the type as per your API response
 
   const [errors, setErrors] = useState<ProfileErrors>({});
   const openModal = () => {
@@ -128,8 +128,6 @@ const Profile: React.FC = () => {
         const formattedDeadline = deadline.toISOString().split('T')[0];
         AsyncStorage.setItem("deadline", formattedDeadline);
     } else if (updateProfile.error) {
-      console.log(updateProfile.error);
-      alert("qwertyuiop")
       Alert.alert(
         langData?.ERROR || "Ошибка",
         langData?.PROFILE_UPDATE_ERROR ||
@@ -376,7 +374,7 @@ const Profile: React.FC = () => {
                       maxLength={14}
                       onChangeText={(text) => handleInputChange("inn", text.replace(/[^0-9]/g, ''))}
                     />
-                      <Text style={{fontSize: 13}}>{langData?.VALIDATE_INN || "Пусть ИНН состоит только из цифр"}</Text>
+                      {/* <Text style={{fontSize: 13}}>{langData?.VALIDATE_INN || "Пусть ИНН состоит только из цифр"}</Text> */}
 
                     {errors.inn && (
                       <Text style={styles.errorText}>{errors.inn}</Text>
@@ -395,7 +393,7 @@ const Profile: React.FC = () => {
                         handleInputChange("filial_code", text.replace(/[^0-9]/g, ''))
                       }
                     />
-                      <Text style={{fontSize: 13}}>{langData?.VALIDATE_MFO || "Пусть МФО состоит только из цифр"}</Text>
+                      {/* <Text style={{fontSize: 13}}>{langData?.VALIDATE_MFO || "Пусть МФО состоит только из цифр"}</Text> */}
 
                     {errors.filial_code && (
                       <Text style={styles.errorText}>{errors.filial_code}</Text>

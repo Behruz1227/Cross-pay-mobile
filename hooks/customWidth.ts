@@ -8,5 +8,8 @@ const BASE_WIDTH = 375;
 
 // Moslashtirilgan piksel hisoblash funksiyasi
 export const responsivePixel = (size: number): number => {
-  return (SCREEN_WIDTH / BASE_WIDTH) * size;
+  return (SCREEN_WIDTH / BASE_WIDTH) * size - 1;
+};
+export const responsiveSpacing = (size: number): number => {
+  return (SCREEN_WIDTH / BASE_WIDTH) * size - 10;
 };
