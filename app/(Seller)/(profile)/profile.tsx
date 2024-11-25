@@ -33,8 +33,8 @@ interface ProfileData {
   lastName: string;
   phone: string;
   email: string;
-  tin: string;
-  bankBik: string;
+  inn: string;
+  filial_code: string;
   password: string;
 }
 
@@ -44,8 +44,8 @@ interface ProfileErrors {
   lastName?: string;
   phone?: string;
   email?: string;
-  tin?: string;
-  bankBik?: string;
+  inn?: string;
+  filial_code?: string;
   password?: string;
 }
 
@@ -72,37 +72,33 @@ const Profile: React.FC = () => {
     lastName: "",
     phone: "",
     email: "",
-    tin: "",
-    bankBik: "",
+    inn: "",
+    filial_code: "",
     password: "12345",
   });
 
-  const updateProfile = useGlobalRequest<any>(update_profile, "PUT", {
+  const updateProfile = useGlobalRequest<any>(update_profile, "PUT",  {
     firstName: formData.firstName,
     lastName: formData.lastName,
     phone: `998${formData.phone.replace(/[^0-9]/g, "")}`,
     email: formData.email,
-    inn: formData.tin || null,
-    filial_code: formData.bankBik || null,
+    inn: formData.inn || null,
+    filial_code: formData.filial_code || null,
     password: formData.password,
-  }); // Adjust the type as per your API response
+  }, "DEFAULT", true); // Adjust the type as per your API response
 
   const [errors, setErrors] = useState<ProfileErrors>({});
-  // const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-
-  // Open the modal and initialize form data
-
   const openModal = () => {
     setFormData({
       firstName: getMee?.response?.firstName || "",
       lastName: getMee?.response?.lastName || "",
       phone: getMee?.response?.phone?.substring(3) || "",
       email: getMee?.response?.email || "",
-      tin: getMee?.response?.inn || "",
-      bankBik: getMee?.response?.filial_code || "",
+      inn: getMee?.response?.inn || "",
+      filial_code: getMee?.response?.filial_code || "",
       password: "12345",
     });
-    console.log(getMee.response);
+    // console.log(getMee.response);
     
     setDefaultPhone(getMee?.response?.phone || "");
     setErrors({});
@@ -132,6 +128,8 @@ const Profile: React.FC = () => {
         const formattedDeadline = deadline.toISOString().split('T')[0];
         AsyncStorage.setItem("deadline", formattedDeadline);
     } else if (updateProfile.error) {
+      console.log(updateProfile.error);
+      alert("qwertyuiop")
       Alert.alert(
         langData?.ERROR || "Ошибка",
         langData?.PROFILE_UPDATE_ERROR ||
@@ -140,17 +138,9 @@ const Profile: React.FC = () => {
     }
   }, [updateProfile.response, updateProfile.error]);
 
-  // Handle input changes
-  // console.log(formData.phone);
   
   const handleInputChange = (name: keyof ProfileData, value: string) => {
-    // if (name === "phone") {
-    //     const formattedValue = formatPhoneNumber(value);
-    //     setFormData((prev) => ({
-    //         ...prev,
-    //         [name]: formattedValue,
-    //     }));
-    // } else {
+    
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -181,10 +171,10 @@ const Profile: React.FC = () => {
         langData?.EMAIL_INVALID || "Неверный формат электронной почты";
     }
     if (role !== "ROLE_TERMINAL") {
-      if (!formData.tin.trim())
-        newErrors.tin = langData?.INN_REQUIRED || "ИНН обязателен";
-      if (!formData.bankBik.trim())
-        newErrors.bankBik = langData?.PARTNER_CODE_REQUIRED || "Требуется МФО";
+      if (!formData.inn.trim())
+        newErrors.inn = langData?.INN_REQUIRED || "ИНН обязателен";
+      if (!formData.filial_code.trim())
+        newErrors.filial_code = langData?.PARTNER_CODE_REQUIRED || "Требуется МФО";
     }
     // Password is optional; no validation unless you want to enforce certain rules
     setErrors(newErrors);
@@ -300,7 +290,7 @@ const Profile: React.FC = () => {
             isModal={modal}
             onConfirm={handleSubmit}
             toggleModal={closeModal}
-            // disableWhiteButton={submitting}
+            // disableWhiteButton={submitinng}
           >
             <ScrollView style={{ width: "100%" }}>
               <View style={styles.modalContent}>
@@ -338,20 +328,7 @@ const Profile: React.FC = () => {
                 <Text style={{ fontSize: 15, paddingVertical: 3 }}>
                   {langData?.MOBILE_TELEPHONE || "Номер телефона"}
                 </Text>
-                {/* <View style={[styles.passwordContainer, { paddingRight: 0 }]}>
-                <View style={styles.eyeIcon}>
-                  <Text style={{ fontSize: 17, paddingHorizontal: 5 }}>
-                    +998
-                  </Text>
-                </View>
-                <TextInput
-                  style={[styles.input, styles.passwordInput, {fontSize: 17}]}
-                  placeholder={langData?.MOBILE_TELEPHONE || "Номер телефона"}
-                  keyboardType="numeric"
-                  value={formatPhoneNumber(formData.phone)}
-                  onChangeText={(text) => handleInputChange("phone", text)}
-                  maxLength={12}
-                /> */}
+                
                 <PhoneInput
                  placeholder={langData?.MOBILE_PHONE_PLASEHOLDER || "Введите номер телефона"}
                   onChangeSelectedCountry={(country) => {
@@ -394,13 +371,15 @@ const Profile: React.FC = () => {
                     <TextInput
                       style={styles.input}
                       placeholder={langData?.MOBILE_INN || "ИНН"}
-                      value={formData.tin}
+                      value={formData.inn}
                       keyboardType="numeric"
                       maxLength={14}
-                      onChangeText={(text) => handleInputChange("tin", text)}
+                      onChangeText={(text) => handleInputChange("inn", text.replace(/[^0-9]/g, ''))}
                     />
-                    {errors.tin && (
-                      <Text style={styles.errorText}>{errors.tin}</Text>
+                      <Text style={{fontSize: 13}}>{langData?.VALIDATE_INN || "Пусть ИНН состоит только из цифр"}</Text>
+
+                    {errors.inn && (
+                      <Text style={styles.errorText}>{errors.inn}</Text>
                     )}
 
                     <Text style={{ fontSize: 15, paddingVertical: 3 }}>
@@ -408,47 +387,21 @@ const Profile: React.FC = () => {
                     </Text>
                     <TextInput
                       style={styles.input}
+                      keyboardType="numeric"
                       placeholder={langData?.MOBILE_MFO || "МФО"}
-                      value={formData.bankBik}
+                      value={formData.filial_code}
                       maxLength={10}
                       onChangeText={(text) =>
-                        handleInputChange("bankBik", text)
+                        handleInputChange("filial_code", text.replace(/[^0-9]/g, ''))
                       }
                     />
-                    {errors.bankBik && (
-                      <Text style={styles.errorText}>{errors.bankBik}</Text>
+                      <Text style={{fontSize: 13}}>{langData?.VALIDATE_MFO || "Пусть МФО состоит только из цифр"}</Text>
+
+                    {errors.filial_code && (
+                      <Text style={styles.errorText}>{errors.filial_code}</Text>
                     )}
                   </>
                 )}
-
-                {/* <Text style={{ fontSize: 15, paddingVertical: 3 }}>
-                  {langData?.MOBILE_PASSWORD || "Пароль"} (
-                  {langData?.IF_PASSWORD_NOT_ENTERED ||
-                    "Если пароль не введен, старый пароль будет сохранен"}
-                  )
-                </Text>
-                <View style={styles.passwordContainer}>
-                  <TextInput
-                    style={[styles.input, styles.passwordInput]}
-                    placeholder={langData?.MOBILE_PASSWORD || "Пароль"}
-                    secureTextEntry={!passwordVisible}
-                    value={formData.password}
-                    onChangeText={(text) => handleInputChange("password", text)}
-                  />
-                  <Pressable
-                    onPress={() => setPasswordVisible(!passwordVisible)}
-                    style={styles.eyeIcon}
-                  >
-                    <FontAwesome
-                      name={passwordVisible ? "eye" : "eye-slash"}
-                      size={24}
-                      color="gray"
-                    />
-                  </Pressable>
-                </View>
-                {errors.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )} */}
               </View>
             </ScrollView>
           </CenteredModal>

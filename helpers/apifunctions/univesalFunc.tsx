@@ -8,13 +8,16 @@ export interface UseGlobalResponse<T> {
     error: any;
     response: T | any;
     globalDataFunc: () => Promise<void>;
+    isAlert?: boolean
 }
 
 export function useGlobalRequest<T>(
     url: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     data?: T,
-    configType: 'DEFAULT' | 'IMAGE' = 'DEFAULT'
+    configType: 'DEFAULT' | 'IMAGE' = 'DEFAULT',
+    isAlert = false
+
 ): UseGlobalResponse<T> {
     const {langData} = langStore()
     const mutation = useMutation({
@@ -50,7 +53,8 @@ export function useGlobalRequest<T>(
             } catch (error) {
                 console.error("Request failed:", error);
                 // throw error; // Pass error to React Query's error handling
-                // alert(langData.ERROR_MOBILE || "Произошла ошибка")
+                if (isAlert) alert(langData.ERROR_MOBILE || "Произошла ошибка")
+                
             }
         },
     });

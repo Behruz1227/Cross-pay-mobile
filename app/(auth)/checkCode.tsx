@@ -1,4 +1,6 @@
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
+  Alert,
   Keyboard,
   Platform,
   SafeAreaView,
@@ -8,61 +10,54 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
 } from "react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useAuthStore } from "@/helpers/stores/auth/auth-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect, useNavigation } from "expo-router";
-import { RootStackParamList } from "@/types/root/root";
-import { NavigationProp } from "@react-navigation/native";
-import { loginUrl, sendCodeUrl } from "@/helpers/url";
+import { useNavigation } from "expo-router";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
+import { useAuthStore } from "@/helpers/stores/auth/auth-store";
+import { langStore } from "@/helpers/stores/language/languageStore";
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
+import { loginUrl, sendCodeUrl } from "@/helpers/url";
 import { Colors } from "@/constants/Colors";
 import NavigationMenu from "@/components/navigationMenu/NavigationMenu";
-import axios from "axios";
-import { Alert } from "react-native";
-import { langStore } from "@/helpers/stores/language/languageStore";
+import { RootStackParamList } from "@/types/root/root";
 
 type SettingsScreenNavigationProp = NavigationProp<
   RootStackParamList,
-  "(auth)/checkCode"
+  "(auth)/login"
 >;
 
 const CheckCode = () => {
   const { phoneNumber } = useAuthStore();
-  const [code, setCode] = useState<string[]>(["", "", "", ""]);
-  const [canResend, setCanResend] = useState(false); // Resend state
-  const [timer, setTimer] = useState(120); // 2 minutes timer
   const navigation = useNavigation<SettingsScreenNavigationProp>();
-  const inputRefs = useRef<Array<TextInput | null>>([]);
-  const [response, setResponse] = useState<any>({});
-  const { langData } = langStore()
 
-  const userData = {
-    phone: `998${phoneNumber.split(" ").join("")}`,
-  };
+  const [code, setCode] = useState<string[]>(Array(4).fill("")); // 4 ta bo'sh qiymat
+  const [canResend, setCanResend] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const inputRefs = useRef<TextInput[]>([]);
+  const [response, setResponse] = useState<any>({});
 
   const checkCode = useGlobalRequest(loginUrl, "POST", {
-    phone: "998" + phoneNumber.split(" ").join(""),
+    phone: "998" + phoneNumber.replace(/\s/g, ""),
     code: +code.join(""),
   });
 
   const sendCode = async () => {
-    if (phoneNumber) {
-      await axios
-        .post(`${sendCodeUrl}`, userData)
-        .then((res) => {
-          if (res.data.data) navigation.navigate("(auth)/checkCode");
-          else if (res.data.error && res.data.error.message)
-            Alert.alert("QR - Pay",res.data.error.message);
-        })
-        .catch((err) => {
-          Alert.alert("QR - Pay", "Произошла ошибка");
-        });
+    try {
+      await axios.post(sendCodeUrl, { phone: `998${phoneNumber.replace(/\s/g, "")}` });
+      Alert.alert(
+        "QR - Pay",
+        Platform.OS === "ios"
+          ? "Код повторно отправлен. Проверьте SMS на своем устройстве."
+          : "Код отправлен повторно. Подтверждение кода будет обработано автоматически."
+      );
+      setTimer(60);
+    } catch {
+      Alert.alert("QR - Pay", "Ошибка при отправке кода");
     }
   };
-
-  
 
   const handleInputChange = (text: string, index: number) => {
     const newCode = [...code];
@@ -71,9 +66,7 @@ const CheckCode = () => {
 
     if (text && index < 3) {
       inputRefs.current[index + 1]?.focus();
-    }
-
-    if (text === "" && index > 0) {
+    } else if (!text && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
@@ -81,18 +74,13 @@ const CheckCode = () => {
   const handleResendCode = () => {
     if (canResend) {
       setCanResend(false);
-      setTimer(120); // Reset timer
-      // Kodni qayta yuborish uchun API chaqirig'i kiritiladi
-      sendCode() 
+      sendCode();
     }
   };
 
-  // Timer logic
   useEffect(() => {
     if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
+      const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
       return () => clearInterval(interval);
     } else {
       setCanResend(true);
@@ -104,32 +92,27 @@ const CheckCode = () => {
       if (checkCode.response) {
         setResponse(checkCode.response);
       } else if (checkCode.error) {
-        Alert.alert("QR - Pay",checkCode.error?.message);
+        Alert.alert("QR - Pay", checkCode.error.message || "Ошибка проверки кода");
       }
     }, [checkCode.response, checkCode.error])
   );
- 
-  
-  useFocusEffect(
-    useCallback(() => {
-      if (response && response?.token) {
-        AsyncStorage.setItem("token", response?.token ? response?.token : null);
-        const deadline = new Date();
-        deadline.setDate(deadline.getDate() + 5);
-        const formattedDeadline = deadline.toISOString().split('T')[0];
-        AsyncStorage.setItem("deadline", formattedDeadline);
-        console.log(formattedDeadline);
-        
-        AsyncStorage.setItem("role", response?.role ? response?.role : null);
-        if (response?.role === "ROLE_SUPER_ADMIN") {
-          Alert.alert("QR - Pay","Вы не можете войти в приложение"); // ---
-        } else {
-          navigation.navigate("(tabs)");
-        }
-        setResponse({});
+
+  useEffect(() => {
+    if (response?.token) {
+      AsyncStorage.setItem("token", response.token);
+      const deadline = new Date();
+      deadline.setDate(deadline.getDate() + 5);
+      AsyncStorage.setItem("deadline", deadline.toISOString().split("T")[0]);
+      AsyncStorage.setItem("role", response.role);
+
+      if (response.role === "ROLE_SUPER_ADMIN") {
+        Alert.alert("QR - Pay", "Вы не можете войти в приложение");
+      } else {
+        navigation.navigate('(auth)/login');
       }
-    }, [response])
-  );
+      setResponse({});
+    }
+  }, [response]);
 
   useEffect(() => {
     if (code.every((digit) => digit !== "")) {
@@ -138,66 +121,61 @@ const CheckCode = () => {
   }, [code]);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.navigationContainer}>
-          <NavigationMenu name="" />
-        </View>
-        <View style={{ marginTop: 50 }}>
-          {/* <Text style={styles.title}>Confirmation number</Text> */}
-          <Text style={styles.title}>Подтверждение номера</Text>
-          <Text style={[styles.title, { fontWeight: "500", marginTop: 30 }]}>
-            +998 {phoneNumber}
-          </Text>
-          {/* <Text style={styles.des}>
-            We will send you an SMS with a confirmation code.
-          </Text> */}
-          <Text style={styles.des}>
-            Мы отправим вам SMS с кодом подтверждения.
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: 20,
-              marginTop: 40,
-            }}
-          >
-            {code.map((digit, index) => (
-              <TextInput
-                key={index}
-                value={digit}
-                onChangeText={(text) => handleInputChange(text, index)}
-                maxLength={1}
-                keyboardType="numeric"
-                style={styles.input}
-                ref={(el) => (inputRefs.current[index] = el)} // Assigning refs
-                returnKeyType="next"
-              />
-            ))}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.navigationContainer}>
+            <NavigationMenu name="" />
           </View>
-
-          {/* Resend Code Section */}
-          <View style={{ marginTop: 30, alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={handleResendCode}
-              disabled={!canResend}
-              style={[
-                styles.resendButton,
-                { backgroundColor: canResend ? Colors.dark.primary : "#ccc" },
-              ]}
-            >
-              {/* <Text style={{ color: "white" }}>Resend code again</Text> */}
-              <Text style={{ color: "white" }}>Отправить код повторно</Text>
-            </TouchableOpacity>
-            {!canResend && (
-              // <Text style={styles.timerText}>Resend code again {timer} s</Text>
-              <Text style={styles.timerText}>Отправить повторно {timer} с</Text>
-            )}
+          <View style={{ marginTop: 50 }}>
+            <Text style={styles.title}>Подтверждение номера</Text>
+            <Text style={[styles.title, { fontWeight: "500", marginTop: 30 }]}>
+              +998 {phoneNumber}
+            </Text>
+            <Text style={styles.des}>
+              {Platform.OS === "ios"
+                ? "Введите код подтверждения, полученный по SMS."
+                : "Код автоматически будет обработан."}
+            </Text>
+            <View style={styles.inputContainer}>
+              {code.map((digit, index) => (
+                <TextInput
+                  key={index}
+                  value={digit}
+                  onChangeText={(text) => handleInputChange(text, index)}
+                  maxLength={1}
+                  keyboardType="numeric"
+                  style={styles.input}
+                  ref={(el) => {
+                    if (el) {
+                      inputRefs.current[index] = el;
+                    }
+                  }}
+                />
+              ))}
+            </View>
+            <View style={styles.resendContainer}>
+              <TouchableOpacity
+                onPress={handleResendCode}
+                disabled={!canResend}
+                style={[
+                  styles.resendButton,
+                  { backgroundColor: canResend ? Colors.dark.primary : "#ccc" },
+                ]}
+              >
+                <Text style={{ color: "white" }}>Отправить код повторно</Text>
+              </TouchableOpacity>
+              {!canResend && (
+                <Text style={styles.timerText}>Отправить повторно {timer} с</Text>
+              )}
+            </View>
           </View>
-        </View>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -223,6 +201,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
   },
+  inputContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginTop: 40,
+  },
   input: {
     borderWidth: 1,
     borderColor: Colors.dark.primary,
@@ -233,6 +217,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     borderRadius: 10,
     color: Colors.dark.primary,
+  },
+  resendContainer: {
+    marginTop: 30,
+    alignItems: "center",
   },
   resendButton: {
     paddingVertical: 10,
