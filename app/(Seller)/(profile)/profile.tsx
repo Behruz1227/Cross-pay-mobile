@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { Avatar } from "react-native-elements/dist/avatar/Avatar";
-import { FontAwesome } from "@expo/vector-icons"; // For password visibility icon
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons"; // For password visibility icon
 import CenteredModal from "@/components/modal/modal-centered";
 import NavigationMenu from "@/components/navigationMenu/NavigationMenu";
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
@@ -77,15 +77,20 @@ const Profile: React.FC = () => {
     password: "12345",
   });
 
-  const updateProfile = useGlobalRequest<any>(update_profile, "PUT",  {
-    firstName: formData.firstName,
-    lastName: formData.lastName,
-    phone: `998${formData.phone.replace(/[^0-9]/g, "")}`,
-    email: formData.email,
-    inn: formData.inn || null,
-    filial_code: formData.filial_code || null,
-    password: formData.password,
-  }, "DEFAULT"); // Adjust the type as per your API response
+  const updateProfile = useGlobalRequest<any>(
+    update_profile,
+    "PUT",
+    {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      phone: `998${formData.phone.replace(/[^0-9]/g, "")}`,
+      email: formData.email,
+      inn: formData.inn || null,
+      filial_code: formData.filial_code || null,
+      password: formData.password,
+    },
+    "DEFAULT"
+  ); // Adjust the type as per your API response
 
   const [errors, setErrors] = useState<ProfileErrors>({});
   const openModal = () => {
@@ -99,7 +104,7 @@ const Profile: React.FC = () => {
       password: "12345",
     });
     // console.log(getMee.response);
-    
+
     setDefaultPhone(getMee?.response?.phone || "");
     setErrors({});
     setModal(true);
@@ -124,9 +129,9 @@ const Profile: React.FC = () => {
       getMee.globalDataFunc(); // Refresh profile data
       AsyncStorage.setItem("token", updateProfile.response);
       const deadline = new Date();
-        deadline.setDate(deadline.getDate() + 5);
-        const formattedDeadline = deadline.toISOString().split('T')[0];
-        AsyncStorage.setItem("deadline", formattedDeadline);
+      deadline.setDate(deadline.getDate() + 5);
+      const formattedDeadline = deadline.toISOString().split("T")[0];
+      AsyncStorage.setItem("deadline", formattedDeadline);
     } else if (updateProfile.error) {
       Alert.alert(
         langData?.ERROR || "Ошибка",
@@ -136,9 +141,7 @@ const Profile: React.FC = () => {
     }
   }, [updateProfile.response, updateProfile.error]);
 
-  
   const handleInputChange = (name: keyof ProfileData, value: string) => {
-    
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -172,7 +175,8 @@ const Profile: React.FC = () => {
       if (!formData.inn.trim())
         newErrors.inn = langData?.INN_REQUIRED || "ИНН обязателен";
       if (!formData.filial_code.trim())
-        newErrors.filial_code = langData?.PARTNER_CODE_REQUIRED || "Требуется МФО";
+        newErrors.filial_code =
+          langData?.PARTNER_CODE_REQUIRED || "Требуется МФО";
     }
     // Password is optional; no validation unless you want to enforce certain rules
     setErrors(newErrors);
@@ -189,7 +193,7 @@ const Profile: React.FC = () => {
       return;
     }
 
-      await updateProfile.globalDataFunc();
+    await updateProfile.globalDataFunc();
   };
 
   return (
@@ -201,21 +205,44 @@ const Profile: React.FC = () => {
         <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
         <ScrollView contentContainerStyle={styles.scrollView}>
           <View style={styles.detailCard}>
+            <View
+              style={{
+                // justifyContent: "space-between",
+
+                width: "100%",
+                // paddingVertical: 20,
+                // position: "relative",
+              }}
+            >
+              <View
+                style={{
+                  alignItems: "flex-end",
+                  width: "100%",
+                  position: "absolute",
+                  right: 0,
+                  // paddingVertical: 20,
+                  // backgroundColor: "#000",
+                  // position: "relative",
+                }}
+              >
+                <Pressable  onPress={openModal}>
+                  <MaterialIcons
+                    style={{ color: Colors.dark.primary }}
+                    name="edit-square"
+                    size={30}
+                  />
+                </Pressable>
+              </View>
+            </View>
             <View style={styles.avatarContainer}>
               <Avatar
                 rounded
-                size="xlarge"
+                size="large"
                 overlayContainerStyle={{ backgroundColor: "lightgray" }}
                 icon={{ name: "user", type: "font-awesome", color: "white" }}
               />
             </View>
-            <Pressable onPress={openModal}>
-              <View style={styles.editButton}>
-                <Text style={styles.editButtonText}>
-                  {langData?.MOBILE_EDIT_PROFILE || "Редактировать профиль"}
-                </Text>
-              </View>
-            </Pressable>
+
             {/* Profile Details */}
             <View style={styles.detailRow}>
               <Text style={styles.title}>
@@ -326,9 +353,12 @@ const Profile: React.FC = () => {
                 <Text style={{ fontSize: 15, paddingVertical: 3 }}>
                   {langData?.MOBILE_TELEPHONE || "Номер телефона"}
                 </Text>
-                
+
                 <PhoneInput
-                 placeholder={langData?.MOBILE_PHONE_PLASEHOLDER || "Введите номер телефона"}
+                  placeholder={
+                    langData?.MOBILE_PHONE_PLASEHOLDER ||
+                    "Введите номер телефона"
+                  }
                   onChangeSelectedCountry={(country) => {
                     // Handle country change if needed
                   }}
@@ -372,9 +402,11 @@ const Profile: React.FC = () => {
                       value={formData.inn}
                       keyboardType="numeric"
                       maxLength={14}
-                      onChangeText={(text) => handleInputChange("inn", text.replace(/[^0-9]/g, ''))}
+                      onChangeText={(text) =>
+                        handleInputChange("inn", text.replace(/[^0-9]/g, ""))
+                      }
                     />
-                      {/* <Text style={{fontSize: 13}}>{langData?.VALIDATE_INN || "Пусть ИНН состоит только из цифр"}</Text> */}
+                    {/* <Text style={{fontSize: 13}}>{langData?.VALIDATE_INN || "Пусть ИНН состоит только из цифр"}</Text> */}
 
                     {errors.inn && (
                       <Text style={styles.errorText}>{errors.inn}</Text>
@@ -390,10 +422,13 @@ const Profile: React.FC = () => {
                       value={formData.filial_code}
                       maxLength={10}
                       onChangeText={(text) =>
-                        handleInputChange("filial_code", text.replace(/[^0-9]/g, ''))
+                        handleInputChange(
+                          "filial_code",
+                          text.replace(/[^0-9]/g, "")
+                        )
                       }
                     />
-                      {/* <Text style={{fontSize: 13}}>{langData?.VALIDATE_MFO || "Пусть МФО состоит только из цифр"}</Text> */}
+                    {/* <Text style={{fontSize: 13}}>{langData?.VALIDATE_MFO || "Пусть МФО состоит только из цифр"}</Text> */}
 
                     {errors.filial_code && (
                       <Text style={styles.errorText}>{errors.filial_code}</Text>
@@ -443,8 +478,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   avatarContainer: {
+    // backgroundColor: "#000",
     justifyContent: "center",
-    paddingVertical: 20,
+    // paddingVertical: 20,
+    position: "relative",
   },
   editButton: {
     flexDirection: "row",
@@ -462,15 +499,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 7,
-    marginBottom: 20,
+    marginBottom: 5,
   },
   title: {
-    fontSize: 20,
+    fontSize: 17,
     color: "#000",
     fontWeight: "700",
   },
   desc: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "600",
     color: Colors.dark.primary,
   },

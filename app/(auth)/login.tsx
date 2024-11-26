@@ -40,7 +40,7 @@ const Login = () => {
   const {langData} = langStore()
 
   const userData = {
-    phone: `998${phoneNumber.replace(/ /g, "")}`,
+    phone: `998${phoneNumber?.replace(/ /g, "")}`,
   };
   // const loginUser = useGlobalRequest(`${sendCodeUrl}`, "POST", userData);
   const loginUser = async () => {
@@ -91,7 +91,7 @@ const Login = () => {
   );
 
   useEffect(() => {
-    setIsPhoneNumberComplete(phoneNumber.replace(/ /g, "").length === 9);
+    setIsPhoneNumberComplete(phoneNumber?.replace(/ /g, "").length === 9);
   }, [phoneNumber]);
 
   function loginuser() {
@@ -140,7 +140,7 @@ const Login = () => {
                 // Handle country change if needed
               }}
               onChangePhoneNumber={(text) => setPhoneNumber(text)}
-              value={phoneNumber}
+              value={phoneNumber || ''}
               selectedCountry={getCountryByCca2("UZ")}
             />
           </View>

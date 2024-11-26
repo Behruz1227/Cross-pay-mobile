@@ -44,9 +44,8 @@ export default function RootLayout() {
     socketModal,
     socketModalData,
     timer,
-    socketData
+    socketData,
   } = SocketStore();
-
 
   useEffect(() => {
     if (socketModalData) {
@@ -54,7 +53,6 @@ export default function RootLayout() {
       setTimer(10); // 10 senlik sanashni o'qishni bosqichga olish
     }
   }, [socketModalData]);
-
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -86,8 +84,8 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <SocketProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <SocketProvider>
           <CallBackModal />
           <SocketHandler socketData={socketData} />
 
@@ -144,15 +142,19 @@ export default function RootLayout() {
               options={{ headerShown: false }}
             />
           </Stack.Navigator>
-        </QueryClientProvider>
-      </SocketProvider>
+        </SocketProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
 
 function SocketHandler({ socketData }: { socketData: any }) {
   // const { setSocketModal, setTimer, setSocketModalData } = SocketStore();
-  const setSocket = useGlobalRequest(`${set_socket}${socketData?.id}`, "POST", {});
+  const setSocket = useGlobalRequest(
+    `${set_socket}${socketData?.id}`,
+    "POST",
+    {}
+  );
 
   useEffect(() => {
     if (socketData?.id) {

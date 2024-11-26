@@ -5,8 +5,8 @@ export interface AuthStoreTypes {
     setFirstName: (val: string) => void;
     lastName: string;
     setLastName: (val: string) => void;
-    phoneNumber: string;
-    setPhoneNumber: (val: string) => void;
+    phoneNumber: string | null;
+    setPhoneNumber: (val: string | null) => void;
     status: boolean | null;
     setStatus: (val: boolean | null) => void;
     isLoginModal: boolean;

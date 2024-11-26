@@ -40,13 +40,13 @@ const CheckCode = () => {
   const [response, setResponse] = useState<any>({});
 
   const checkCode = useGlobalRequest(loginUrl, "POST", {
-    phone: "998" + phoneNumber.replace(/\s/g, ""),
+    phone: "998" + phoneNumber?.replace(/\s/g, ""),
     code: +code.join(""),
   });
 
   const sendCode = async () => {
     try {
-      await axios.post(sendCodeUrl, { phone: `998${phoneNumber.replace(/\s/g, "")}` });
+      await axios.post(sendCodeUrl, { phone: `998${phoneNumber?.replace(/\s/g, "")}` });
       Alert.alert(
         "QR - Pay",
         Platform.OS === "ios"
@@ -108,7 +108,7 @@ const CheckCode = () => {
       if (response.role === "ROLE_SUPER_ADMIN") {
         Alert.alert("QR - Pay", "Вы не можете войти в приложение");
       } else {
-        navigation.navigate('(auth)/login');
+        navigation.navigate('(tabs)');
       }
       setResponse({});
     }
@@ -149,6 +149,8 @@ const CheckCode = () => {
                   maxLength={1}
                   keyboardType="numeric"
                   style={styles.input}
+                  textContentType="oneTimeCode"
+                  autoComplete="sms-otp"
                   ref={(el) => {
                     if (el) {
                       inputRefs.current[index] = el;

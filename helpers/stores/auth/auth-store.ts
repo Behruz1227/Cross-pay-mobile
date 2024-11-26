@@ -9,7 +9,7 @@ export const useAuthStore = create<AuthStoreTypes>((set) => ({
     lastName: '',
     setLastName: (val: string) => set({ lastName: val }),
     phoneNumber: '',
-    setPhoneNumber: (val: string) => set({ phoneNumber: val }),
+    setPhoneNumber: (val) => set({ phoneNumber: val }),
     status: null,
     setStatus: (val: boolean | null) => set({ status: val }),
     isLoginModal: false,
