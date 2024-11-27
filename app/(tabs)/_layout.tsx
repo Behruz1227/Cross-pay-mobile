@@ -6,7 +6,10 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { AntDesign } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  BottomTabBarButtonProps,
+  createBottomTabNavigator,
+} from "@react-navigation/bottom-tabs";
 import Terminal from "./Terminal";
 import PaymentQr from "./PayMent";
 import HomeScreen from "./home";
@@ -15,11 +18,12 @@ import { useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { langStore } from "@/helpers/stores/language/languageStore";
 import { responsivePixel, responsiveSpacing } from "@/hooks/customWidth";
+import { TouchableOpacityProps } from "react-native-gesture-handler";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const [role, setRole] = useState<string>("");
-  const {langData} = langStore();
+  const { langData } = langStore();
 
   useFocusEffect(
     useCallback(() => {
@@ -58,29 +62,28 @@ export default function TabLayout() {
         })}
       >
         {/* {role === "ROLE_SELLER" && ( */}
-          <Tab.Screen
-            name="home"
-            component={HomeScreen}
-            options={{
-              title: langData?.MOBILE_PANEL_CONTROL || "Панель управления",
-              tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon
-                  size={responsivePixel(26)}
-                  name={focused ? "home" : "home-outline"}
-                  color={color}
-                />
-              ),
-              tabBarButton: (props) => (
-                <TouchableOpacity
-                
-                  {...props}
-                  onPress={(e) => {
-                    props.onPress?.(e); // Use optional chaining
-                  }}
-                />
-              ),
-            }}
-          />
+        <Tab.Screen
+          name="home"
+          component={HomeScreen}
+          options={{
+            title: langData?.MOBILE_PANEL_CONTROL || "Панель управления",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon
+                size={responsivePixel(26)}
+                name={focused ? "home" : "home-outline"}
+                color={color}
+              />
+            ),
+            tabBarButton: (props: any) => (
+              <TouchableOpacity
+                {...props}
+                onPress={(e) => {
+                  props.onPress?.(e); // Use optional chaining
+                }}
+              />
+            ),
+          }}
+        />
         {/* )} */}
 
         <Tab.Screen
@@ -89,15 +92,19 @@ export default function TabLayout() {
           options={{
             title: langData?.MOBILE_PAYMENT || "Оплата",
             tabBarIcon: ({ color, focused }) => (
-              <AntDesign name="qrcode" size={responsivePixel(30)} color={color} />
+              <AntDesign
+                name="qrcode"
+                size={responsivePixel(30)}
+                color={color}
+              />
             ),
-            tabBarButton: (props) => (
+            tabBarButton: (props: BottomTabBarButtonProps) => (
               <TouchableOpacity
                 activeOpacity={0.8}
-                {...props}
+                {...(props as TouchableOpacityProps)}
                 onPress={(e) => {
-                  if (props && props.onPress) {
-                    props.onPress?.(e); // Use optional chaining
+                  if (props.onPress) {
+                    props.onPress(e);
                   }
                 }}
               />
@@ -112,18 +119,24 @@ export default function TabLayout() {
             options={{
               title: langData?.MOBILE_TERMINAL || "Терминал",
               tabBarIcon: ({ color, focused }) => (
-                <FontAwesome5 name="calculator" size={responsivePixel(26)} color={color} />
+                <FontAwesome5
+                  name="calculator"
+                  size={responsivePixel(26)}
+                  color={color}
+                />
               ),
-              tabBarButton: (props) => (
+              tabBarButton: (props: BottomTabBarButtonProps) => (
                 <TouchableOpacity
-                  {...props}
+                  activeOpacity={0.8}
+                  {...(props as TouchableOpacityProps)} // Type assertion to avoid prop conflicts
                   onPress={(e) => {
-                    props.onPress?.(e); // Use optional chaining
+                    if (props.onPress) {
+                      props.onPress(e);
+                    }
                   }}
                 />
               ),
             }}
-            
           />
         )}
 
@@ -134,13 +147,20 @@ export default function TabLayout() {
             options={{
               title: langData?.MOBILE_USER_TERMINAL || "Пользователи терминала",
               tabBarIcon: ({ color, focused }) => (
-                <FontAwesome5 name="users" size={responsivePixel(26)} color={color} />
+                <FontAwesome5
+                  name="users"
+                  size={responsivePixel(25)}
+                  color={color}
+                />
               ),
-              tabBarButton: (props) => (
+              tabBarButton: (props: BottomTabBarButtonProps) => (
                 <TouchableOpacity
-                  {...props}
+                  activeOpacity={0.8}
+                  {...(props as TouchableOpacityProps)} // Type assertion to avoid prop conflicts
                   onPress={(e) => {
-                    props.onPress?.(e); // Use optional chaining
+                    if (props.onPress) {
+                      props.onPress(e);
+                    }
                   }}
                 />
               ),

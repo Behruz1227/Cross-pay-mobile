@@ -17,7 +17,6 @@ import { useNavigation } from "expo-router";
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { useAuthStore } from "@/helpers/stores/auth/auth-store";
-import { langStore } from "@/helpers/stores/language/languageStore";
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
 import { loginUrl, sendCodeUrl } from "@/helpers/url";
 import { Colors } from "@/constants/Colors";
@@ -32,7 +31,6 @@ type SettingsScreenNavigationProp = NavigationProp<
 const CheckCode = () => {
   const { phoneNumber } = useAuthStore();
   const navigation = useNavigation<SettingsScreenNavigationProp>();
-
   const [code, setCode] = useState<string[]>(Array(4).fill("")); // 4 ta bo'sh qiymat
   const [canResend, setCanResend] = useState(false);
   const [timer, setTimer] = useState(60);
@@ -46,7 +44,9 @@ const CheckCode = () => {
 
   const sendCode = async () => {
     try {
-      await axios.post(sendCodeUrl, { phone: `998${phoneNumber?.replace(/\s/g, "")}` });
+      await axios.post(sendCodeUrl, {
+        phone: `998${phoneNumber?.replace(/\s/g, "")}`,
+      });
       Alert.alert(
         "QR - Pay",
         Platform.OS === "ios"
@@ -56,18 +56,6 @@ const CheckCode = () => {
       setTimer(60);
     } catch {
       Alert.alert("QR - Pay", "Ошибка при отправке кода");
-    }
-  };
-
-  const handleInputChange = (text: string, index: number) => {
-    const newCode = [...code];
-    newCode[index] = text;
-    setCode(newCode);
-
-    if (text && index < 3) {
-      inputRefs.current[index + 1]?.focus();
-    } else if (!text && index > 0) {
-      inputRefs.current[index - 1]?.focus();
     }
   };
 
@@ -92,7 +80,10 @@ const CheckCode = () => {
       if (checkCode.response) {
         setResponse(checkCode.response);
       } else if (checkCode.error) {
-        Alert.alert("QR - Pay", checkCode.error.message || "Ошибка проверки кода");
+        Alert.alert(
+          "QR - Pay",
+          checkCode.error.message || "Ошибка проверки кода"
+        );
       }
     }, [checkCode.response, checkCode.error])
   );
@@ -108,7 +99,7 @@ const CheckCode = () => {
       if (response.role === "ROLE_SUPER_ADMIN") {
         Alert.alert("QR - Pay", "Вы не можете войти в приложение");
       } else {
-        navigation.navigate('(tabs)');
+        navigation.navigate("(tabs)");
       }
       setResponse({});
     }
@@ -119,6 +110,29 @@ const CheckCode = () => {
       checkCode.globalDataFunc();
     }
   }, [code]);
+
+  const handleInputChange = (text: string, index: number) => {
+    const newCode = [...code];
+    newCode[index] = text;
+    setCode(newCode);
+
+    if (text && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+
+    if (text === "" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleAutoFill = (filledCode: string) => {
+    if (filledCode.length === 4) {
+      const splitCode = filledCode.split("");
+      setCode(splitCode);
+
+      inputRefs.current[splitCode.length - 1]?.blur();
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -145,7 +159,13 @@ const CheckCode = () => {
                 <TextInput
                   key={index}
                   value={digit}
-                  onChangeText={(text) => handleInputChange(text, index)}
+                  onChangeText={(text) => {
+                    handleInputChange(text, index);
+                    console.log("text", text);
+                    if (text.length === 4) {
+                      handleAutoFill(text); // To‘liq kod kelganida ishlaydi
+                    }
+                  }}
                   maxLength={1}
                   keyboardType="numeric"
                   style={styles.input}
@@ -171,7 +191,9 @@ const CheckCode = () => {
                 <Text style={{ color: "white" }}>Отправить код повторно</Text>
               </TouchableOpacity>
               {!canResend && (
-                <Text style={styles.timerText}>Отправить повторно {timer} с</Text>
+                <Text style={styles.timerText}>
+                  Отправить повторно {timer} с
+                </Text>
               )}
             </View>
           </View>

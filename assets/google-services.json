@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "858319746689",
+    "project_id": "qrpay-2c065",
+    "storage_bucket": "qrpay-2c065.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858319746689:android:273357a143c86436147f80",
+        "android_client_info": {
+          "package_name": "com.behruz_0790.qrpay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfQTQMKsV4xqSrMltzYtf36fVpFI_FELo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

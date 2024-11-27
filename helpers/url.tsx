@@ -41,3 +41,6 @@ export const words_post_language = `${apiLink}words/save/language`
 export const words_get_language = `${apiLink}words/language?webOrMobile=`
 export const words_get_data = `${apiLink}words/web-or-mobile?status=`
 
+export const limit_Price = `${apiLink}limit-price/seller-and-terminal`
+
+

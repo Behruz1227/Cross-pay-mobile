@@ -15,6 +15,7 @@ import {
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
 import {
   createPayment,
+  limit_Price,
   payment_get_seller,
   payment_get_terminal,
   UserTerminalListGet,
@@ -61,6 +62,7 @@ const CreateQr = () => {
     "DEFAULT",
   );
   const terminalList = useGlobalRequest(UserTerminalListGet, "GET");
+  const limitPrice = useGlobalRequest(limit_Price, "GET");
 
   useFocusEffect(
     useCallback(() => {
@@ -71,6 +73,7 @@ const CreateQr = () => {
       setPhoneNumber("");
       setQrValue(null);
       terminalList.globalDataFunc(); // Terminal ro'yxatini yangilash
+      limitPrice.globalDataFunc(); // Terminal ro'yxatini yangilash
       const fetchPhoneNumber = async () => {
         const number = await AsyncStorage.getItem("phoneNumber");
         setPhoneNumber(number || "");
@@ -78,6 +81,7 @@ const CreateQr = () => {
       fetchPhoneNumber();
     }, [])
   );
+
 
   console.log(paymentCreate.response, 123);
   useEffect(() => {
@@ -110,12 +114,12 @@ const CreateQr = () => {
       setAmountError(langData?.MOBILE_ENTER_AMOUNT || "Введите сумму");
       valid = false;
     } else if (
-      amount && +amount.replace(/[^0-9]/g, "") < 10000 ||
-      +amount.replace(/[^0-9]/g, "") > 150000000
+      amount && +amount.replace(/[^0-9]/g, "") < limitPrice.response.min ||
+      +amount.replace(/[^0-9]/g, "") > limitPrice.response.max
     ) {
       setAmountError(
-        langData?.MOBILE_AMOUNT_LIMIT ||
-          "Сумма должна быть в пределах от 10 000 до 150 000 000 UZS"
+        langData?.MOBILE_AMOUNT_LIMIT + "\n" + limitPrice.response.min + " - " + limitPrice.response.max ||
+          `Сумма должна быть в пределах от ${limitPrice.response.min} до ${limitPrice.response.max}  UZS`
       );
       valid = false;
     } else {
@@ -142,6 +146,8 @@ const CreateQr = () => {
     }
     return valid;
   };
+  console.log(limitPrice.response, 123);
+  
 
   const handleSubmit = () => {
     if (handleValidation()) {
