@@ -108,7 +108,7 @@ const Profile: React.FC = () => {
     setDefaultPhone(getMee?.response?.phone || "");
     setErrors({});
     setModal(true);
-  };
+  };  
 
   const closeModal = () => setModal(false);
 
@@ -298,7 +298,7 @@ const Profile: React.FC = () => {
               <Text style={styles.title}>
                 {langData?.MOBILE_EMAIL || "Электронная почта"}:{" "}
               </Text>
-              <Text style={styles.desc}>{getMee?.response?.email || "--"}</Text>
+              <Text style={styles.desc}>{getMee?.response?.email.replace(/^(\w{2}).*?(\d{2}@.*)$/, '$1...$2') || "--"}</Text>
             </View>
           </View>
           <ChangeLang />

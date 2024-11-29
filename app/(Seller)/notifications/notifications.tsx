@@ -34,8 +34,8 @@ const Notifications = () => {
   const { notificationSocket } = SocketStore();
   // const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  useEffect(() => {}, []);
-  const [selectedIds, setSelectedIds] = useState([]);
+  useEffect(() => { }, []);
+  const [selectedIds, setSelectedIds] = useState<string[] | number[]>([]);
   const [page, setPage] = useState(0);
 
   const { response, globalDataFunc, loading } = useGlobalRequest(
@@ -106,8 +106,8 @@ const Notifications = () => {
       Alert.alert(
         "QR - Pay",
         isReadNotification?.error?.message ||
-          langData?.MOBILE_ERROR ||
-          "Произошла ошибка"
+        langData?.MOBILE_ERROR ||
+        "Произошла ошибка"
       );
     }
   }, [isReadNotification.response, isReadNotification.error]);
@@ -122,8 +122,8 @@ const Notifications = () => {
       Alert.alert(
         "QR - Pay",
         deleteNotification?.error?.message ||
-          langData?.MOBILE_ERROR ||
-          "Произошла ошибка"
+        langData?.MOBILE_ERROR ||
+        "Произошла ошибка"
       );
     }
   }, [deleteNotification.response, deleteNotification.error]);
@@ -145,8 +145,8 @@ const Notifications = () => {
       // isRead false bo'lgan elementlarning id larini olish
       const ids = response?.object
         ? response?.object
-            .filter((item: any) => !item.isRead) // isRead false bo'lganlarni filtrlash
-            .map((item: any) => item.id)
+          .filter((item: any) => !item.isRead) // isRead false bo'lganlarni filtrlash
+          .map((item: any) => item.id)
         : []; // ularning id larini olish
 
       if (ids && ids.length > 0) {
@@ -205,7 +205,7 @@ const Notifications = () => {
         ) : sortedNotifications && sortedNotifications.length > 0 ? (
           sortedNotifications?.map(
             (item: {
-              id: number;
+              id: any;
               title: string;
               createdAt: string;
               isRead: string;
@@ -243,6 +243,10 @@ const Notifications = () => {
                     <MaterialIcons
                       name="done"
                       size={24}
+                      onPress={async () => {
+                        await setSelectedIds([item.id]);
+                        await isReadNotification.globalDataFunc()
+                      }}
                       color={Colors.light.primary}
                     />
                   )}
@@ -382,8 +386,9 @@ const Notifications = () => {
       </ScrollView>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.button}
+          style={[sortedNotifications && sortedNotifications.length > 0 ? { ...styles.button } : { ...styles.button, backgroundColor: '#d3d3d3' }]}
           onPress={() => handleSelectIsReadIds()}
+          disabled={sortedNotifications === undefined && !sortedNotifications}
         >
           {isReadNotification.loading ? (
             <ActivityIndicator size="small" color="#fff" />
@@ -395,8 +400,9 @@ const Notifications = () => {
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.button}
+          style={[sortedNotifications && sortedNotifications.length > 0 ? { ...styles.button } : { ...styles.button, backgroundColor: '#d3d3d3' }]}
           onPress={() => setModalVisible(true)}
+          disabled={sortedNotifications === undefined && !sortedNotifications}
         >
           {deleteNotification.loading ? (
             <ActivityIndicator size="small" color="#fff" />

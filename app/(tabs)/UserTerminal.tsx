@@ -51,7 +51,7 @@ interface UserTerminalResponse {
 
 export default function UserTerminal() {
   const [page, setPage] = useState(0);
-  const {langData} = langStore();
+  const { langData } = langStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const [isDeleteModalVisible, setDeleteModalVisible] = useState<boolean>(
@@ -104,26 +104,26 @@ export default function UserTerminal() {
   );
   // console.log(response);
 
-  
-    useEffect(() => {
-      if (editTerminal?.response) {
-        Alert.alert("QR - Pay", langData?.MOBILE_USER_TERMINAL_ADDED_SUCCESSFULLY || "Пользователь терминала добавлен успешно!");
-        globalDataFunc();
-        terminalList.globalDataFunc();
-      } else if (editTerminal?.error) {
-        Alert.alert("QR - Pay", langData?.MOBILE_ERROR_ADDING_USER_TERMINAL || "Ошибка добавления пользователя терминала.");
-      }
-    }, [editTerminal?.response, editTerminal?.error])
 
-    useEffect(() => {
-      if (terminalDelete?.response) {
-        Alert.alert("QR - Pay",langData?.MOBILE_USER_TERMINAL_DELETED_SUCCESSFULLY || "Пользователь терминала успешно удален");
-        globalDataFunc();
-        terminalList.globalDataFunc();
-      } else if (terminalDelete?.error) {
-        Alert.alert("QR - Pay",langData?.MOBILE_ERROR_DELETING_USER_TERMINAL || "Произошла ошибка при удалении пользователя терминала.");
-      }
-    }, [terminalDelete?.response, terminalDelete?.error])
+  useEffect(() => {
+    if (editTerminal?.response) {
+      Alert.alert("QR - Pay", langData?.MOBILE_USER_TERMINAL_ADDED_SUCCESSFULLY || "Пользователь терминала добавлен успешно!");
+      globalDataFunc();
+      terminalList.globalDataFunc();
+    } else if (editTerminal?.error) {
+      Alert.alert("QR - Pay", langData?.MOBILE_ERROR_ADDING_USER_TERMINAL || "Ошибка добавления пользователя терминала.");
+    }
+  }, [editTerminal?.response, editTerminal?.error])
+
+  useEffect(() => {
+    if (terminalDelete?.response) {
+      Alert.alert("QR - Pay", langData?.MOBILE_USER_TERMINAL_DELETED_SUCCESSFULLY || "Пользователь терминала успешно удален");
+      globalDataFunc();
+      terminalList.globalDataFunc();
+    } else if (terminalDelete?.error) {
+      Alert.alert("QR - Pay", langData?.MOBILE_ERROR_DELETING_USER_TERMINAL || "Произошла ошибка при удалении пользователя терминала.");
+    }
+  }, [terminalDelete?.response, terminalDelete?.error])
 
   const validateForm = () => {
     const { terminalId, firstName, phone, password } = formData;
@@ -160,24 +160,24 @@ export default function UserTerminal() {
     name: keyof typeof formData,
     value: string | number
   ) => {
-    
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
 
   const formatPhoneNumber = (text: string) => {
     let cleaned = ("" + text).replace(/\D/g, "");
 
     if (cleaned.length > 12) {
-        cleaned = cleaned.slice(0, 12);
+      cleaned = cleaned.slice(0, 12);
     }
     const formattedNumber = cleaned.replace(
-        /(\d{2})(\d{3})(\d{2})(\d{2})/,
-        (match, p1, p2, p3, p4) => {
-            return `${p1} ${p2} ${p3} ${p4}`.trim();
-        }
+      /(\d{2})(\d{3})(\d{2})(\d{2})/,
+      (match, p1, p2, p3, p4) => {
+        return `${p1} ${p2} ${p3} ${p4}`.trim();
+      }
     );
 
     return formattedNumber;
@@ -207,10 +207,10 @@ export default function UserTerminal() {
         <View>
           <View style={styles.header}>
             <Text style={styles.headerText}>
-            {langData?.MOBILE_USER_TERMINAL || "Пользователи терминала"} (
+              {langData?.MOBILE_USER_TERMINAL || "Пользователи терминала"} (
               {response?.totalElements ? response?.totalElements : 0})
             </Text>
-            <Text style={{fontSize: 17, fontWeight: "bold"}}>({((page) * 10)} - { ((page) * 10 +10)})</Text>
+            <Text style={{ fontSize: 17, fontWeight: "bold" }}>({((page) * 10)} - {((page) * 10 + 10)})</Text>
           </View>
           <Pressable
             onPress={() => {
@@ -218,7 +218,7 @@ export default function UserTerminal() {
             }}
           >
             <Text style={[styles.paginationButton]}>
-            {langData?.MOBILE_CREATE_USER || "Создать пользователя"}
+              {langData?.MOBILE_CREATE_USER || "Создать пользователя"}
             </Text>
           </Pressable>
           {response && response.object.length > 0 ? (
@@ -231,11 +231,11 @@ export default function UserTerminal() {
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_NAME || "Имя"}:</Text>
                   <Text style={styles.cardDetail}>{truncateString(item?.firstName || "-", 20)}</Text>
-                </View> 
+                </View>
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_SURNAME || "Фамилия"}:</Text>
                   <Text style={styles.cardDetail}>{truncateString(item?.lastName || "-", 20)}</Text>
-                </View> 
+                </View>
                 <View style={styles.row}>
                   <Text style={styles.boldText}>{langData?.MOBILE_TELEPHONE || "Телефон"}:</Text>
                   <Text style={styles.cardDetail}>
@@ -327,8 +327,8 @@ export default function UserTerminal() {
                 mode="dropdown"
                 dropdownIconColor={Colors.light.primary}
                 dropdownIconRippleColor={Colors.light.primary}
-                style={[styles.picker, Platform.OS === 'ios' ? {height: 150} : null]}
-                itemStyle={Platform.OS === 'ios' ? {height: 150} : null}
+                style={[styles.picker, Platform.OS === 'ios' ? { height: 150 } : null]}
+                itemStyle={Platform.OS === 'ios' ? { height: 150 } : null}
                 selectedValue={formData.terminalId}
                 onValueChange={(itemValue: any) =>
                   handleInputChange("terminalId", itemValue)
@@ -348,7 +348,7 @@ export default function UserTerminal() {
             {/* First Name */}
             <Text style={styles.label}>{langData?.MOBILE_NAME || "Имя"}</Text>
             <TextInput
-              placeholder={langData?.MOBILE_NAME || "Имя"} 
+              placeholder={langData?.MOBILE_NAME || "Имя"}
               style={styles.input}
               maxLength={40}
               value={formData.firstName}
@@ -356,7 +356,7 @@ export default function UserTerminal() {
             />
             <Text style={styles.label}>{langData?.MOBILE_SURNAME || "Фамилия"}</Text>
             <TextInput
-              placeholder={langData?.MOBILE_SURNAME || "Фамилия"} 
+              placeholder={langData?.MOBILE_SURNAME || "Фамилия"}
               style={styles.input}
               maxLength={40}
               value={formData.lastName}
@@ -364,15 +364,15 @@ export default function UserTerminal() {
             />
 
             <Text style={styles.label}>{langData?.MOBILE_TELEPHONE || "Телефон"}</Text>
-              <PhoneInput
-               placeholder={langData?.MOBILE_PHONE_PLASEHOLDER || "Введите номер телефона"}
-                selectedCountry={getCountryByCca2("UZ")} 
-                value={formData.phone}
-                onChangePhoneNumber={(text) => handleInputChange("phone", text)}
-                onChangeSelectedCountry={(country) => {
-                  // Handle country change if needed
-                }}
-              />
+            <PhoneInput
+              placeholder={langData?.MOBILE_PHONE_PLASEHOLDER || "Введите номер телефона"}
+              selectedCountry={getCountryByCca2("UZ")}
+              value={formData.phone}
+              onChangePhoneNumber={(text) => handleInputChange("phone", text)}
+              onChangeSelectedCountry={(country) => {
+                // Handle country change if needed
+              }}
+            />
             {/* </View> */}
 
             {/* Password */}
