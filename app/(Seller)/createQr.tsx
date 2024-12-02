@@ -128,11 +128,7 @@ const CreateQr = () => {
       +amount.replace(/[^0-9]/g, "") > limitPrice.response.max
     ) {
       setAmountError(
-        langData?.MOBILE_AMOUNT_LIMIT +
-          "\n" +
-          limitPrice.response.min +
-          " - " +
-          limitPrice.response.max ||
+        langData?.MOBILE_AMOUNT_LIMIT + "\n" + limitPrice.response.min + " - " + limitPrice.response.max ||
           `Сумма должна быть в пределах от ${limitPrice.response.min} до ${limitPrice.response.max}  UZS`
       );
       valid = false;
@@ -160,7 +156,8 @@ const CreateQr = () => {
     }
     return valid;
   };
-  console.log(getMee?.response?.phone);
+  console.log(limitPrice.response, 123);
+  
 
   const handleSubmit = () => {
     if (handleValidation()) {
@@ -208,22 +205,20 @@ const CreateQr = () => {
                 }
                 onValueChange={(itemValue: any) => setTerminalId(itemValue)}
               >
-                {terminalList?.response?.length > 0 ? (
-                  terminalList?.response?.map((terminal: any) => (
-                    <Picker.Item
-                      key={terminal.id}
-                      label={terminal?.name}
-                      value={terminal.id}
-                    />
-                  ))
-                ) : (
+                <Picker.Item
+                  label={
+                    langData?.MOBILE_SELECT_TERMINAL || "Выберите терминал"
+                  }
+                  value={0}
+                />
+                {terminalList?.response?.length > 0 && terminalList?.response?.map((terminal: any) => (
                   <Picker.Item
                     label={
                       langData?.MOBILE_NO_TERMINAL || "У вас нет терминала"
                     }
                     value={0}
                   />
-                )}
+                ))}
               </Picker>
             </View>
             {terminalIdError ? (
@@ -279,9 +274,8 @@ const CreateQr = () => {
               <View style={styles.qrContainer}>
                 <View style={{ paddingVertical: 10 }}>
                   <Text style={styles.qrTextTop}>
-                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${
-                      Messageamount || "0"
-                    } ${"UZS"}`}
+                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${Messageamount || "0"
+                      } ${"UZS"}`}
                   </Text>
                 </View>
                 <ErrorBoundary>
@@ -294,15 +288,7 @@ const CreateQr = () => {
               </View>
             ) : null}
           </View>
-          <TouchableOpacity
-            style={[
-              terminalList?.response?.length === 0
-                ? { ...styles.sendButton, backgroundColor: "#d3d3d3" }
-                : { ...styles.sendButton },
-            ]}
-            disabled={terminalList?.response?.length === 0}
-            onPress={handleSubmit}
-          >
+          <TouchableOpacity style={styles.sendButton} onPress={handleSubmit}>
             <Text style={styles.sendButtonText}>
               {paymentCreate.loading ? (
                 <ActivityIndicator size="small" color="#fff" />
