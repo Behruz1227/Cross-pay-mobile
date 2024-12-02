@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Keyboard,
-  Platform,
 } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { Avatar } from "react-native-elements/dist/avatar/Avatar";
@@ -461,7 +460,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   navigationContainer: {
-    paddingTop: Platform.OS === "ios" ? 35 : 0,
+    paddingTop: 35,
   },
   scrollView: {
     paddingVertical: 20,

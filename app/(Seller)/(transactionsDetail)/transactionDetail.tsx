@@ -115,6 +115,9 @@ const TransactionDetail = () => {
     closeModalConfirm();
   };
 
+  console.log(paymentDetail?.transaction?.status);
+  
+
 
   const bgGenerator = (status: string) => {
     if (status === "WAIT")
@@ -127,6 +130,8 @@ const TransactionDetail = () => {
       return ["blue", langData?.MOBILE_STATUS_NEW || "Новый"];
     else if (status === "RETURNED")
       return ["purple", langData?.MOBILE_STATUS_RETURNED || "Возврат"];
+    else if (status === "EXPIRED")
+      return ["blue", langData?.MOBILE_STATUS_EXPIRED || "Истекший"];
     else return ["gray", langData?.MOBILE_STATUS_UNKNOWN || "Неизвестно"]; // Default case
   };
 
