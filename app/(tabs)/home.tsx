@@ -186,7 +186,7 @@ export default function HomeScreen() {
                 langData?.MOBILE_CANCELLED_TRANSACTIONS ||
                 "Отмененные транзакции"
               }
-              desc={response && response.cancelCount}
+              desc={response && response?.cancelCount}
               icon={
                 <MaterialIcons
                   name="money-off"

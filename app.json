@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "QR - Pay",
-    "slug": "qrpay",
-    "version": "1.0.5",
+    "slug": "qr-pay",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -39,10 +39,10 @@
     },
     "extra": {
       "eas": {
-        "projectId": "6ad159b1-619c-4fbd-88fe-3fd569b3437b",
+        "projectId": "3c9fbcc6-0d75-4c9f-b491-913f03b3c9e0",
         "apiBaseUrl": "https://apk.qrpay.uz/"
       }
     },
-    "owner": "qr-pay"
+    "owner": "behruz_0790"
   }
 }

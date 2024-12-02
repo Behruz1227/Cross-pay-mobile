@@ -15,6 +15,7 @@ import {
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
 import {
   createPayment,
+  get_mee,
   limit_Price,
   payment_get_seller,
   payment_get_terminal,
@@ -40,7 +41,7 @@ const CreateQr = () => {
   const [terminalId, setTerminalId] = useState(0);
   const { langData } = langStore();
   // const [phone, setPhone] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const { phoneNumber, setPhoneNumber } = useAuthStore();
   const [Messageamount, setMessageAmount] = useState("");
   const [alertShown, setAlertShown] = useState(false);
   const [qrValue, setQrValue] = useState<any>(null);
@@ -59,10 +60,12 @@ const CreateQr = () => {
       terminalId: terminalId,
       // socketId: socketData?.id
     },
-    "DEFAULT",
+    "DEFAULT"
   );
   const terminalList = useGlobalRequest(UserTerminalListGet, "GET");
   const limitPrice = useGlobalRequest(limit_Price, "GET");
+
+  const getMee = useGlobalRequest(get_mee, "GET");
 
   useFocusEffect(
     useCallback(() => {
@@ -70,20 +73,19 @@ const CreateQr = () => {
       setAmount("");
       setTerminalIdError("");
       setAmountError("");
-      setPhoneNumber("");
+      // setPhoneNumber("");
       setQrValue(null);
+      getMee.globalDataFunc(); // Mee'ni yangilash
       terminalList.globalDataFunc(); // Terminal ro'yxatini yangilash
       limitPrice.globalDataFunc(); // Terminal ro'yxatini yangilash
-      const fetchPhoneNumber = async () => {
-        const number = await AsyncStorage.getItem("phoneNumber");
-        setPhoneNumber(number || "");
-      };
-      fetchPhoneNumber();
+      // const fetchPhoneNumber = async () => {
+      //   const number = await AsyncStorage.getItem("phoneNumber");
+      //   setPhoneNumber(number || "");
+      // };
+      // fetchPhoneNumber();
     }, [])
   );
 
-
-  console.log(paymentCreate.response, 123);
   useEffect(() => {
     if (paymentCreate.response && !alertShown) {
       setMessageAmount(amount);
@@ -98,11 +100,19 @@ const CreateQr = () => {
   }, [paymentCreate.response, paymentCreate.error]);
 
   useEffect(() => {
+    if (getMee.response) {
+      setPhoneNumber(getMee?.response?.phone);
+    } else if (getMee.error) {
+    }
+  }, [getMee.response, getMee.error]);
+
+  useEffect(() => {
     setAlertShown(false);
   }, [amount]);
 
   useEffect(() => {
-    if (terminalList?.response?.length > 0) { // Fix the condition
+    if (terminalList?.response?.length > 0) {
+      // Fix the condition
       setTerminalId(terminalList.response[0].id); // Correct the syntax
     }
   }, [terminalList?.response]);
@@ -114,19 +124,23 @@ const CreateQr = () => {
       setAmountError(langData?.MOBILE_ENTER_AMOUNT || "Введите сумму");
       valid = false;
     } else if (
-      amount && +amount.replace(/[^0-9]/g, "") < limitPrice.response.min ||
+      (amount && +amount.replace(/[^0-9]/g, "") < limitPrice.response.min) ||
       +amount.replace(/[^0-9]/g, "") > limitPrice.response.max
     ) {
       setAmountError(
-        langData?.MOBILE_AMOUNT_LIMIT + "\n" + limitPrice.response.min + " - " + limitPrice.response.max ||
-        `Сумма должна быть в пределах от ${limitPrice.response.min} до ${limitPrice.response.max}  UZS`
+        langData?.MOBILE_AMOUNT_LIMIT +
+          "\n" +
+          limitPrice.response.min +
+          " - " +
+          limitPrice.response.max ||
+          `Сумма должна быть в пределах от ${limitPrice.response.min} до ${limitPrice.response.max}  UZS`
       );
       valid = false;
     } else {
       setAmountError("");
     }
     // if (!phone) {
-    //   if (phoneNumber === "77 308 8888" && phoneNumber.replace(/ /g, "").length !== 9) {
+    //   if (phoneNumber === "998773088888" && phoneNumber.replace(/ /g, "").length !== 9) {
     //     setPhoneError("Enter a valid phone number");
     //     valid = false;
     //   } else if (phoneNumber.replace(/ /g, "").length === 10) {
@@ -146,12 +160,11 @@ const CreateQr = () => {
     }
     return valid;
   };
-  console.log(limitPrice.response, 123);
-
+  console.log(getMee?.response?.phone);
 
   const handleSubmit = () => {
     if (handleValidation()) {
-      if (phoneNumber !== "77 308 8888") {
+      if (phoneNumber !== "998773088888") {
         paymentCreate.globalDataFunc();
       } else {
         setQrValue(
@@ -188,20 +201,29 @@ const CreateQr = () => {
                   Platform.OS === "ios" ? { height: 150 } : null,
                 ]}
                 itemStyle={Platform.OS === "ios" ? { height: 150 } : null}
-                selectedValue={terminalList?.response?.length > 0 ? terminalList.response[0].id : terminalId}
+                selectedValue={
+                  terminalList?.response?.length > 0
+                    ? terminalList.response[0].id
+                    : terminalId
+                }
                 onValueChange={(itemValue: any) => setTerminalId(itemValue)}
               >
-
-                {terminalList?.response?.length > 0 ? terminalList?.response?.map((terminal: any) => (
+                {terminalList?.response?.length > 0 ? (
+                  terminalList?.response?.map((terminal: any) => (
+                    <Picker.Item
+                      key={terminal.id}
+                      label={terminal?.name}
+                      value={terminal.id}
+                    />
+                  ))
+                ) : (
                   <Picker.Item
-                    key={terminal.id}
-                    label={terminal.name}
-                    value={terminal.id}
+                    label={
+                      langData?.MOBILE_NO_TERMINAL || "У вас нет терминала"
+                    }
+                    value={0}
                   />
-                )) : <Picker.Item
-                  label={langData?.MOBILE_NO_TERMINAL || "У вас нет терминала"}
-                  value={0}
-                />}
+                )}
               </Picker>
             </View>
             {terminalIdError ? (
@@ -214,7 +236,7 @@ const CreateQr = () => {
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <PhoneInput
               placeholder={langData?.MOBILE_PHONE_PLASEHOLDER || "Введите номер телефона"}
-                selectedCountry={getCountryByCca2(phoneNumber === "77 308 8888" ? "UZ" : "RU")} 
+                selectedCountry={getCountryByCca2(phoneNumber === "998773088888" ? "UZ" : "RU")} 
                 value={phone}
                 onChangePhoneNumber={(text) => {
                   setPhone(text);
@@ -257,8 +279,9 @@ const CreateQr = () => {
               <View style={styles.qrContainer}>
                 <View style={{ paddingVertical: 10 }}>
                   <Text style={styles.qrTextTop}>
-                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${Messageamount || "0"
-                      } ${"UZS"}`}
+                    {`${langData?.MOBILE_QR_AMOUNT || "QR-сумма"}: ${
+                      Messageamount || "0"
+                    } ${"UZS"}`}
                   </Text>
                 </View>
                 <ErrorBoundary>
@@ -271,7 +294,15 @@ const CreateQr = () => {
               </View>
             ) : null}
           </View>
-          <TouchableOpacity style={[terminalList?.response?.length === 0 ? {...styles.sendButton, backgroundColor: '#d3d3d3'} : {...styles.sendButton}]} disabled={terminalList?.response?.length === 0} onPress={handleSubmit}>
+          <TouchableOpacity
+            style={[
+              terminalList?.response?.length === 0
+                ? { ...styles.sendButton, backgroundColor: "#d3d3d3" }
+                : { ...styles.sendButton },
+            ]}
+            disabled={terminalList?.response?.length === 0}
+            onPress={handleSubmit}
+          >
             <Text style={styles.sendButtonText}>
               {paymentCreate.loading ? (
                 <ActivityIndicator size="small" color="#fff" />

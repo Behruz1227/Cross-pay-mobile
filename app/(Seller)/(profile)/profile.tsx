@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { Avatar } from "react-native-elements/dist/avatar/Avatar";
@@ -83,7 +84,7 @@ const Profile: React.FC = () => {
     {
       firstName: formData.firstName,
       lastName: formData.lastName,
-      phone: `998${formData.phone.replace(/[^0-9]/g, "")}`,
+      phone: `998${formData?.phone?.replace(/[^0-9]/g, "")}`,
       email: formData.email,
       inn: formData.inn || null,
       filial_code: formData.filial_code || null,
@@ -266,7 +267,7 @@ const Profile: React.FC = () => {
               </Text>
               <Text style={styles.desc}>
                 {getMee?.response?.phone
-                  ? `+${getMee?.response?.phone.replace(
+                  ? `+${getMee?.response?.phone?.replace(
                       /(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
                       "$1 $2 $3 $4 $5"
                     )}`
@@ -298,7 +299,7 @@ const Profile: React.FC = () => {
               <Text style={styles.title}>
                 {langData?.MOBILE_EMAIL || "Электронная почта"}:{" "}
               </Text>
-              <Text style={styles.desc}>{getMee?.response?.email.replace(/^(\w{2}).*?(\d{2}@.*)$/, '$1...$2') || "--"}</Text>
+              <Text style={styles.desc}>{getMee?.response?.email?.replace(/^(\w{2}).*?(\d{2}@.*)$/, '$1...$2') || "--"}</Text>
             </View>
           </View>
           <ChangeLang />
@@ -403,7 +404,7 @@ const Profile: React.FC = () => {
                       keyboardType="numeric"
                       maxLength={14}
                       onChangeText={(text) =>
-                        handleInputChange("inn", text.replace(/[^0-9]/g, ""))
+                        handleInputChange("inn", text?.replace(/[^0-9]/g, ""))
                       }
                     />
                     {/* <Text style={{fontSize: 13}}>{langData?.VALIDATE_INN || "Пусть ИНН состоит только из цифр"}</Text> */}
@@ -424,7 +425,7 @@ const Profile: React.FC = () => {
                       onChangeText={(text) =>
                         handleInputChange(
                           "filial_code",
-                          text.replace(/[^0-9]/g, "")
+                          text?.replace(/[^0-9]/g, "")
                         )
                       }
                     />
@@ -460,7 +461,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   navigationContainer: {
-    paddingTop: 35,
+    paddingTop: Platform.OS === "ios" ? 35 : 0,
   },
   scrollView: {
     paddingVertical: 20,

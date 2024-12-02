@@ -25,6 +25,7 @@ import NavigationMenu from "@/components/navigationMenu/NavigationMenu";
 import { Colors } from "@/constants/Colors";
 import { langStore } from "@/helpers/stores/language/languageStore";
 import { SocketStore } from "@/helpers/stores/socket/socketStore";
+import { Platform } from "react-native";
 
 const Notifications = () => {
   const [url, setUrl] = useState("");
@@ -440,7 +441,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f5f5",
     padding: 20,
-    paddingTop: 50,
+    paddingTop: Platform.OS === "ios" ? 50 : 0,
   },
   noDataText: {
     fontSize: 16,
