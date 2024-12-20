@@ -67,6 +67,8 @@ const CreateQr = () => {
 
   const getMee = useGlobalRequest(get_mee, "GET");
 
+
+
   useFocusEffect(
     useCallback(() => {
       // Ma'lumotlarni tozalash
@@ -109,6 +111,9 @@ const CreateQr = () => {
   useEffect(() => {
     setAlertShown(false);
   }, [amount]);
+
+  console.log("terminalListterminalListterminalList",paymentCreate);
+  
 
   useEffect(() => {
     if (terminalList?.response?.length > 0) {
@@ -156,7 +161,7 @@ const CreateQr = () => {
     }
     return valid;
   };
-  console.log(limitPrice.response, 123);
+  // console.log(limitPrice.response, 123);
   
 
   const handleSubmit = () => {
@@ -189,7 +194,7 @@ const CreateQr = () => {
               {langData?.MOBILE_TERMINAL || "Терминал"}
             </Text>
             <View style={styles.pickerContainer}>
-              <Picker
+            <Picker
                 mode="dropdown"
                 dropdownIconColor={Colors.light.primary}
                 dropdownIconRippleColor={Colors.light.primary}
@@ -198,27 +203,20 @@ const CreateQr = () => {
                   Platform.OS === "ios" ? { height: 150 } : null,
                 ]}
                 itemStyle={Platform.OS === "ios" ? { height: 150 } : null}
-                selectedValue={
-                  terminalList?.response?.length > 0
-                    ? terminalList.response[0].id
-                    : terminalId
-                }
+                selectedValue={terminalList?.response?.length > 0 ? terminalList.response[0].id : terminalId}
                 onValueChange={(itemValue: any) => setTerminalId(itemValue)}
               >
-                <Picker.Item
-                  label={
-                    langData?.MOBILE_SELECT_TERMINAL || "Выберите терминал"
-                  }
-                  value={0}
-                />
-                {terminalList?.response?.length > 0 && terminalList?.response?.map((terminal: any) => (
+
+                {terminalList?.response?.length > 0 ? terminalList?.response?.map((terminal: any) => (
                   <Picker.Item
-                    label={
-                      langData?.MOBILE_NO_TERMINAL || "У вас нет терминала"
-                    }
-                    value={0}
+                    key={terminal.id}
+                    label={terminal.name}
+                    value={terminal.id}
                   />
-                ))}
+                )) : <Picker.Item
+                  label={langData?.MOBILE_NO_TERMINAL || "У вас нет терминала"}
+                  value={0}
+                />}
               </Picker>
             </View>
             {terminalIdError ? (

@@ -25,9 +25,9 @@ export function useGlobalRequest<T>(
         const config =
           configType === "DEFAULT" ? await getConfig() : await getConfigImg();
         let res;
-        console.log('url', url);
-        console.log('config', config);
-        console.log('data', data);
+        // console.log('url', url);
+        // console.log('config', config);
+        // console.log('data', data);
         switch (method) {
           case "GET":
             res = await axios.get(url, config || {});

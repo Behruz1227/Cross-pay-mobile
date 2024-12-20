@@ -73,7 +73,7 @@ const Navbar = () => {
   const getCount = useGlobalRequest(url, "GET");
   const getMee = useGlobalRequest(get_mee, "GET");
 
-  console.log(getMee.response);
+  // console.log(getMee.response);
 
   useFocusEffect(
     useCallback(() => {

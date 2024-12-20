@@ -161,7 +161,7 @@ const CheckCode = () => {
                   value={digit}
                   onChangeText={(text) => {
                     handleInputChange(text, index);
-                    console.log("text", text);
+                    // console.log("text", text);
                     if (text.length === 4) {
                       handleAutoFill(text); // To‘liq kod kelganida ishlaydi
                     }

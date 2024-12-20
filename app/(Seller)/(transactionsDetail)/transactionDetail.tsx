@@ -115,7 +115,7 @@ const TransactionDetail = () => {
     closeModalConfirm();
   };
 
-  console.log(paymentDetail?.transaction?.status);
+  console.log("paymentDetailpaymentDetailpaymentDetail",paymentDetail);
   
 
 

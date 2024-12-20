@@ -89,7 +89,7 @@ export default function RootLayout() {
           <CallBackModal />
           <SocketHandler socketData={socketData} />
 
-          <InternetCheckModal />
+          {/* <InternetCheckModal /> */}
           <Stack.Navigator
             initialRouteName="index"
             screenOptions={{ animation: "none" }}
