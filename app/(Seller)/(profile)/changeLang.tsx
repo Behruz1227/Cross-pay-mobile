@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { Avatar } from "react-native-elements";
 import { useGlobalRequest } from "@/helpers/apifunctions/univesalFunc";
@@ -13,8 +13,7 @@ const ChangeLang = () => {
   const getLang = useGlobalRequest(`${words_get_language}MOBILE`, "GET");
   const getLangData = useGlobalRequest(`${words_get_data}MOBILE`, "GET");
   const changeLang = useGlobalRequest(
-    `${words_post_language}?lang=${
-      selectedLang ? selectedLang.toLowerCase() : "ru"
+    `${words_post_language}?lang=${selectedLang ? selectedLang.toLowerCase() : "ru"
     }&webOrMobile=MOBILE`,
     "POST",
     {}
@@ -68,12 +67,24 @@ const ChangeLang = () => {
           }
           onPress={() => handleLangChange("uz")}
         />
-        <Avatar
-          rounded
-          size="small"
-          source={require("./uzb.png")} // Replace with actual flag image path
-        />
-        <Text style={styles.title}>UZ </Text>
+        <Pressable
+          onPress={() => handleLangChange("uz")}
+          style={
+            {
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 5
+            }
+          }>
+          <Avatar
+            rounded
+            size="small"
+            source={require("./uzb.png")} // Replace with actual flag image path
+          />
+          <Text style={styles.title}>UZ </Text>
+        </Pressable>
       </View>
       <View style={styles.detailRow}>
         <RadioButton
@@ -83,12 +94,25 @@ const ChangeLang = () => {
           }
           onPress={() => handleLangChange("ru")}
         />
-        <Avatar
-          rounded
-          size="small" 
-          source={require("./rus.png")}
-        />
-        <Text style={styles.title}>RU </Text>
+        <Pressable
+          onPress={() => handleLangChange("ru")}
+          style={
+            {
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 5
+            }
+          }>
+
+          <Avatar
+            rounded
+            size="small"
+            source={require("./rus.png")}
+          />
+          <Text style={styles.title}>RU </Text>
+        </Pressable>
       </View>
     </View>
   );

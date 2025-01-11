@@ -2,11 +2,12 @@
   "build": {
     "production": {
       "android": {
-        "buildType": "app-bundle",
+        "buildType": "apk",
         "resourceClass": "medium"
       },
       "ios": {
         "simulator": false
+        
       },
       "env": {
         "API_BASE_URL": "https://apk.qrpay.uz/"
@@ -22,7 +23,7 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "abdulazizsaidov5599@icloud.com",
+        "appleId": "behruzxonniyozov12@icloud.com",
         "ascAppId": "6737022841",
         "appleTeamId": "QGWH4H5H2J"
       }
